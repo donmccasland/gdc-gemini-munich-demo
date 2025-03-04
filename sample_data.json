@@ -1,0 +1,68 @@
+{
+  "report_date": "2025-03-04",
+  "reporting_period_start": "2025-02-01",
+  "reporting_period_end": "2025-02-28",
+  "prepared_by": "Fraud Detection Department",
+  "executive_summary": "This report details 5 suspected fraudulent transactions identified in February 2025.",
+  "transactions": [
+    {
+      "transactionID": "TXN-001",
+      "date": "2025-02-05",
+      "time": "10:30",
+      "accountNumber": "1234-5678-9012-3456",
+      "merchantRecipient": "Online Electronics Store",
+      "amount": 500.00,
+      "descriptionNotes": "Unusual purchase of high-value electronics from a new IP address.",
+      "suspectedFraudType": "Card-Not-Present Fraud"
+    },
+    {
+      "transactionID": "TXN-002",
+      "date": "2025-02-10",
+      "time": "14:15",
+      "accountNumber": "9876-5432-1098-7654",
+      "merchantRecipient": "Unknown Recipient",
+      "amount": 100.00,
+      "descriptionNotes": "Multiple small transfers to an unrecognized recipient.",
+      "suspectedFraudType": "Account Takeover"
+    },
+    {
+      "transactionID": "TXN-003",
+      "date": "2025-02-15",
+      "time": "20:00",
+      "accountNumber": "1111-2222-3333-4444",
+      "merchantRecipient": "ATM - Foreign Country",
+      "amount": 200.00,
+      "descriptionNotes": "ATM withdrawal in a foreign country without prior notification.",
+      "suspectedFraudType": "ATM Fraud"
+    },
+    {
+      "transactionID": "TXN-004",
+      "date": "2025-02-20",
+      "time": "09:00",
+      "accountNumber": "5555-6666-7777-8888",
+      "merchantRecipient": "Suspicious Website",
+      "amount": 75.00,
+      "descriptionNotes": "Purchase from a website known for phishing.",
+      "suspectedFraudType": "Phishing/Card Fraud"
+    },
+    {
+      "transactionID": "TXN-005",
+      "date": "2025-02-25",
+      "time": "16:30",
+      "accountNumber": "9999-0000-1111-2222",
+      "merchantRecipient": "Online Gaming Platform",
+      "amount": 300.00,
+      "descriptionNotes": "Multiple purchases within a short time from a gaming platform.",
+      "suspectedFraudType": "Account Takeover/Card Testing"
+    }
+  ],
+  "trends": "Increase in card-not-present fraud.",
+  "patterns": "Transactions originating from suspicious IP addresses.",
+  "risk_factors": "Compromised account credentials, weak passwords.",
+  "actions_taken": "Affected accounts were temporarily suspended, customers were notified.",
+  "recommendations": "Implement multi-factor authentication, enhance fraud detection systems.",
+  "supporting_docs": "Transaction logs, IP address reports.",
+  "contact_name": "John Smith",
+  "contact_email": "john.smith@example.com",
+  "contact_phone": "555-123-4567"
+}

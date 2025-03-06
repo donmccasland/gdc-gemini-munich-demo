@@ -1,3 +1,160 @@
+[
+  {
+  "report_date": "2025-03-04",
+  "reporting_period_start": "2025-02-01",
+  "reporting_period_end": "2025-02-28",
+  "prepared_by": "Fraud Detection Department",
+  "executive_summary": "This report details 5 suspected fraudulent transactions identified in February 2025.",
+  "transactions": [
+    {
+      "transactionID": "TXN-001",
+      "date": "2025-02-05",
+      "time": "10:30",
+      "accountNumber": "1234-5678-9012-3456",
+      "merchantRecipient": "Online Electronics Store",
+      "amount": 500.00,
+      "descriptionNotes": "Unusual purchase of high-value electronics from a new IP address.",
+      "suspectedFraudType": "Card-Not-Present Fraud"
+    },
+    {
+      "transactionID": "TXN-002",
+      "date": "2025-02-10",
+      "time": "14:15",
+      "accountNumber": "9876-5432-1098-7654",
+      "merchantRecipient": "Unknown Recipient",
+      "amount": 100.00,
+      "descriptionNotes": "Multiple small transfers to an unrecognized recipient.",
+      "suspectedFraudType": "Account Takeover"
+    },
+    {
+      "transactionID": "TXN-003",
+      "date": "2025-02-15",
+      "time": "20:00",
+      "accountNumber": "1111-2222-3333-4444",
+      "merchantRecipient": "ATM - Foreign Country",
+      "amount": 200.00,
+      "descriptionNotes": "ATM withdrawal in a foreign country without prior notification.",
+      "suspectedFraudType": "ATM Fraud"
+    },
+    {
+      "transactionID": "TXN-004",
+      "date": "2025-02-20",
+      "time": "09:00",
+      "accountNumber": "5555-6666-7777-8888",
+      "merchantRecipient": "Suspicious Website",
+      "amount": 75.00,
+      "descriptionNotes": "Purchase from a website known for phishing.",
+      "suspectedFraudType": "Phishing/Card Fraud"
+    },
+    {
+      "transactionID": "TXN-005",
+      "date": "2025-02-25",
+      "time": "16:30",
+      "accountNumber": "9999-0000-1111-2222",
+      "merchantRecipient": "Online Gaming Platform",
+      "amount": 300.00,
+      "descriptionNotes": "Multiple purchases within a short time from a gaming platform.",
+      "suspectedFraudType": "Account Takeover/Card Testing"
+    }
+  ],
+  "trends": "Increase in card-not-present fraud.",
+  "patterns": "Transactions originating from suspicious IP addresses.",
+  "risk_factors": "Compromised account credentials, weak passwords.",
+  "actions_taken": "Affected accounts were temporarily suspended, customers were notified.",
+  "recommendations": "Implement multi-factor authentication, enhance fraud detection systems.",
+  "supporting_docs": "Transaction logs, IP address reports.",
+  "contact_name": "John Smith",
+  "contact_email": "john.smith@example.com",
+  "contact_phone": "555-123-4567"
+},
+{
+  "report_date": "2025-04-05",
+  "reporting_period_start": "2025-03-01",
+  "reporting_period_end": "2025-03-31",
+  "prepared_by": "Cybersecurity and Compliance Unit",
+  "executive_summary": "This report outlines 7 potential security breaches and unauthorized access attempts detected during March 2025.",
+  "transactions": [
+    {
+      "transactionID": "SEC-001",
+      "date": "2025-03-03",
+      "time": "02:15",
+      "accountNumber": "USER-1001",
+      "merchantRecipient": "Internal Server Logins",
+      "amount": null,
+      "descriptionNotes": "Multiple failed login attempts from an unknown external IP.",
+      "suspectedFraudType": "Brute Force Attack"
+    },
+    {
+      "transactionID": "SEC-002",
+      "date": "2025-03-08",
+      "time": "11:00",
+      "accountNumber": "FILE-SHARE-2001",
+      "merchantRecipient": "Cloud Storage Access",
+      "amount": null,
+      "descriptionNotes": "Unauthorized access to sensitive file shares outside of normal working hours.",
+      "suspectedFraudType": "Data Exfiltration"
+    },
+    {
+      "transactionID": "SEC-003",
+      "date": "2025-03-12",
+      "time": "18:45",
+      "accountNumber": "EMAIL-3001",
+      "merchantRecipient": "External Email Server",
+      "amount": null,
+      "descriptionNotes": "Suspicious email forwarding rule created on a high-level executive's account.",
+      "suspectedFraudType": "Email Compromise"
+    },
+    {
+      "transactionID": "SEC-004",
+      "date": "2025-03-17",
+      "time": "09:30",
+      "accountNumber": "DATABASE-4001",
+      "merchantRecipient": "Internal Database",
+      "amount": null,
+      "descriptionNotes": "Unusual SQL queries accessing sensitive customer data.",
+      "suspectedFraudType": "SQL Injection/Data Breach"
+    },
+    {
+      "transactionID": "SEC-005",
+      "date": "2025-03-22",
+      "time": "23:00",
+      "accountNumber": "VPN-5001",
+      "merchantRecipient": "Remote Access Server",
+      "amount": null,
+      "descriptionNotes": "VPN connection from a blacklisted IP address.",
+      "suspectedFraudType": "Unauthorized Remote Access"
+    },
+    {
+      "transactionID": "SEC-006",
+      "date": "2025-03-26",
+      "time": "14:20",
+      "accountNumber": "WEBSITE-6001",
+      "merchantRecipient": "Public Website",
+      "amount": null,
+      "descriptionNotes": "Increased traffic and requests indicating a potential DDoS attack.",
+      "suspectedFraudType": "Denial of Service"
+    },
+    {
+      "transactionID": "SEC-007",
+      "date": "2025-03-30",
+      "time": "08:00",
+      "accountNumber": "ENDPOINT-7001",
+      "merchantRecipient": "Employee Laptop",
+      "amount": null,
+      "descriptionNotes": "Detection of malware on an employee's laptop after visiting a compromised website.",
+      "suspectedFraudType": "Malware Infection"
+    }
+  ],
+  "trends": "Increased attempts at unauthorized access from external sources.",
+  "patterns": "Recurring login failures from specific IP ranges, unusual data access patterns.",
+  "risk_factors": "Outdated security patches, weak access controls, lack of user awareness.",
+  "actions_taken": "IP addresses blocked, affected accounts locked, systems scanned for malware.",
+  "recommendations": "Implement stricter access controls, update security software, conduct employee security training.",
+  "supporting_docs": "Server logs, network traffic analysis, incident reports.",
+  "contact_name": "Alice Johnson",
+  "contact_email": "alice.johnson@example.com",
+  "contact_phone": "555-987-6543"
+},
 {
   "report_date": "2025-03-04",
   "reporting_period_start": "2025-02-01",
@@ -65,4 +222,561 @@
   "contact_name": "John Smith",
   "contact_email": "john.smith@example.com",
   "contact_phone": "555-123-4567"
+},
+{
+  "report_date": "2025-04-05",
+  "reporting_period_start": "2025-03-01",
+  "reporting_period_end": "2025-03-31",
+  "prepared_by": "Cybersecurity and Compliance Unit",
+  "executive_summary": "This report outlines 7 potential security breaches and unauthorized access attempts detected during March 2025.",
+  "transactions": [
+    {
+      "transactionID": "SEC-001",
+      "date": "2025-03-03",
+      "time": "02:15",
+      "accountNumber": "USER-1001",
+      "merchantRecipient": "Internal Server Logins",
+      "amount": null,
+      "descriptionNotes": "Multiple failed login attempts from an unknown external IP.",
+      "suspectedFraudType": "Brute Force Attack"
+    },
+    {
+      "transactionID": "SEC-002",
+      "date": "2025-03-08",
+      "time": "11:00",
+      "accountNumber": "FILE-SHARE-2001",
+      "merchantRecipient": "Cloud Storage Access",
+      "amount": null,
+      "descriptionNotes": "Unauthorized access to sensitive file shares outside of normal working hours.",
+      "suspectedFraudType": "Data Exfiltration"
+    },
+    {
+      "transactionID": "SEC-003",
+      "date": "2025-03-12",
+      "time": "18:45",
+      "accountNumber": "EMAIL-3001",
+      "merchantRecipient": "External Email Server",
+      "amount": null,
+      "descriptionNotes": "Suspicious email forwarding rule created on a high-level executive's account.",
+      "suspectedFraudType": "Email Compromise"
+    },
+    {
+      "transactionID": "SEC-004",
+      "date": "2025-03-17",
+      "time": "09:30",
+      "accountNumber": "DATABASE-4001",
+      "merchantRecipient": "Internal Database",
+      "amount": null,
+      "descriptionNotes": "Unusual SQL queries accessing sensitive customer data.",
+      "suspectedFraudType": "SQL Injection/Data Breach"
+    },
+    {
+      "transactionID": "SEC-005",
+      "date": "2025-03-22",
+      "time": "23:00",
+      "accountNumber": "VPN-5001",
+      "merchantRecipient": "Remote Access Server",
+      "amount": null,
+      "descriptionNotes": "VPN connection from a blacklisted IP address.",
+      "suspectedFraudType": "Unauthorized Remote Access"
+    },
+    {
+      "transactionID": "SEC-006",
+      "date": "2025-03-26",
+      "time": "14:20",
+      "accountNumber": "WEBSITE-6001",
+      "merchantRecipient": "Public Website",
+      "amount": null,
+      "descriptionNotes": "Increased traffic and requests indicating a potential DDoS attack.",
+      "suspectedFraudType": "Denial of Service"
+    },
+    {
+      "transactionID": "SEC-007",
+      "date": "2025-03-30",
+      "time": "08:00",
+      "accountNumber": "ENDPOINT-7001",
+      "merchantRecipient": "Employee Laptop",
+      "amount": null,
+      "descriptionNotes": "Detection of malware on an employee's laptop after visiting a compromised website.",
+      "suspectedFraudType": "Malware Infection"
+    }
+  ],
+  "trends": "Increased attempts at unauthorized access from external sources.",
+  "patterns": "Recurring login failures from specific IP ranges, unusual data access patterns.",
+  "risk_factors": "Outdated security patches, weak access controls, lack of user awareness.",
+  "actions_taken": "IP addresses blocked, affected accounts locked, systems scanned for malware.",
+  "recommendations": "Implement stricter access controls, update security software, conduct employee security training.",
+  "supporting_docs": "Server logs, network traffic analysis, incident reports.",
+  "contact_name": "Alice Johnson",
+  "contact_email": "alice.johnson@example.com",
+  "contact_phone": "555-987-6543"
+},
+{
+  "report_date": "2025-03-04",
+  "reporting_period_start": "2025-02-01",
+  "reporting_period_end": "2025-02-28",
+  "prepared_by": "Fraud Detection Department",
+  "executive_summary": "This report details 5 suspected fraudulent transactions identified in February 2025.",
+  "transactions": [
+    {
+      "transactionID": "TXN-001",
+      "date": "2025-02-05",
+      "time": "10:30",
+      "accountNumber": "1234-5678-9012-3456",
+      "merchantRecipient": "Online Electronics Store",
+      "amount": 500.00,
+      "descriptionNotes": "Unusual purchase of high-value electronics from a new IP address.",
+      "suspectedFraudType": "Card-Not-Present Fraud"
+    },
+    {
+      "transactionID": "TXN-002",
+      "date": "2025-02-10",
+      "time": "14:15",
+      "accountNumber": "9876-5432-1098-7654",
+      "merchantRecipient": "Unknown Recipient",
+      "amount": 100.00,
+      "descriptionNotes": "Multiple small transfers to an unrecognized recipient.",
+      "suspectedFraudType": "Account Takeover"
+    },
+    {
+      "transactionID": "TXN-003",
+      "date": "2025-02-15",
+      "time": "20:00",
+      "accountNumber": "1111-2222-3333-4444",
+      "merchantRecipient": "ATM - Foreign Country",
+      "amount": 200.00,
+      "descriptionNotes": "ATM withdrawal in a foreign country without prior notification.",
+      "suspectedFraudType": "ATM Fraud"
+    },
+    {
+      "transactionID": "TXN-004",
+      "date": "2025-02-20",
+      "time": "09:00",
+      "accountNumber": "5555-6666-7777-8888",
+      "merchantRecipient": "Suspicious Website",
+      "amount": 75.00,
+      "descriptionNotes": "Purchase from a website known for phishing.",
+      "suspectedFraudType": "Phishing/Card Fraud"
+    },
+    {
+      "transactionID": "TXN-005",
+      "date": "2025-02-25",
+      "time": "16:30",
+      "accountNumber": "9999-0000-1111-2222",
+      "merchantRecipient": "Online Gaming Platform",
+      "amount": 300.00,
+      "descriptionNotes": "Multiple purchases within a short time from a gaming platform.",
+      "suspectedFraudType": "Account Takeover/Card Testing"
+    }
+  ],
+  "trends": "Increase in card-not-present fraud.",
+  "patterns": "Transactions originating from suspicious IP addresses.",
+  "risk_factors": "Compromised account credentials, weak passwords.",
+  "actions_taken": "Affected accounts were temporarily suspended, customers were notified.",
+  "recommendations": "Implement multi-factor authentication, enhance fraud detection systems.",
+  "supporting_docs": "Transaction logs, IP address reports.",
+  "contact_name": "John Smith",
+  "contact_email": "john.smith@example.com",
+  "contact_phone": "555-123-4567"
+},
+{
+  "report_date": "2025-04-05",
+  "reporting_period_start": "2025-03-01",
+  "reporting_period_end": "2025-03-31",
+  "prepared_by": "Cybersecurity and Compliance Unit",
+  "executive_summary": "This report outlines 7 potential security breaches and unauthorized access attempts detected during March 2025.",
+  "transactions": [
+    {
+      "transactionID": "SEC-001",
+      "date": "2025-03-03",
+      "time": "02:15",
+      "accountNumber": "USER-1001",
+      "merchantRecipient": "Internal Server Logins",
+      "amount": null,
+      "descriptionNotes": "Multiple failed login attempts from an unknown external IP.",
+      "suspectedFraudType": "Brute Force Attack"
+    },
+    {
+      "transactionID": "SEC-002",
+      "date": "2025-03-08",
+      "time": "11:00",
+      "accountNumber": "FILE-SHARE-2001",
+      "merchantRecipient": "Cloud Storage Access",
+      "amount": null,
+      "descriptionNotes": "Unauthorized access to sensitive file shares outside of normal working hours.",
+      "suspectedFraudType": "Data Exfiltration"
+    },
+    {
+      "transactionID": "SEC-003",
+      "date": "2025-03-12",
+      "time": "18:45",
+      "accountNumber": "EMAIL-3001",
+      "merchantRecipient": "External Email Server",
+      "amount": null,
+      "descriptionNotes": "Suspicious email forwarding rule created on a high-level executive's account.",
+      "suspectedFraudType": "Email Compromise"
+    },
+    {
+      "transactionID": "SEC-004",
+      "date": "2025-03-17",
+      "time": "09:30",
+      "accountNumber": "DATABASE-4001",
+      "merchantRecipient": "Internal Database",
+      "amount": null,
+      "descriptionNotes": "Unusual SQL queries accessing sensitive customer data.",
+      "suspectedFraudType": "SQL Injection/Data Breach"
+    },
+    {
+      "transactionID": "SEC-005",
+      "date": "2025-03-22",
+      "time": "23:00",
+      "accountNumber": "VPN-5001",
+      "merchantRecipient": "Remote Access Server",
+      "amount": null,
+      "descriptionNotes": "VPN connection from a blacklisted IP address.",
+      "suspectedFraudType": "Unauthorized Remote Access"
+    },
+    {
+      "transactionID": "SEC-006",
+      "date": "2025-03-26",
+      "time": "14:20",
+      "accountNumber": "WEBSITE-6001",
+      "merchantRecipient": "Public Website",
+      "amount": null,
+      "descriptionNotes": "Increased traffic and requests indicating a potential DDoS attack.",
+      "suspectedFraudType": "Denial of Service"
+    },
+    {
+      "transactionID": "SEC-007",
+      "date": "2025-03-30",
+      "time": "08:00",
+      "accountNumber": "ENDPOINT-7001",
+      "merchantRecipient": "Employee Laptop",
+      "amount": null,
+      "descriptionNotes": "Detection of malware on an employee's laptop after visiting a compromised website.",
+      "suspectedFraudType": "Malware Infection"
+    }
+  ],
+  "trends": "Increased attempts at unauthorized access from external sources.",
+  "patterns": "Recurring login failures from specific IP ranges, unusual data access patterns.",
+  "risk_factors": "Outdated security patches, weak access controls, lack of user awareness.",
+  "actions_taken": "IP addresses blocked, affected accounts locked, systems scanned for malware.",
+  "recommendations": "Implement stricter access controls, update security software, conduct employee security training.",
+  "supporting_docs": "Server logs, network traffic analysis, incident reports.",
+  "contact_name": "Alice Johnson",
+  "contact_email": "alice.johnson@example.com",
+  "contact_phone": "555-987-6543"
+},
+{
+  "report_date": "2025-03-04",
+  "reporting_period_start": "2025-02-01",
+  "reporting_period_end": "2025-02-28",
+  "prepared_by": "Fraud Detection Department",
+  "executive_summary": "This report details 5 suspected fraudulent transactions identified in February 2025.",
+  "transactions": [
+    {
+      "transactionID": "TXN-001",
+      "date": "2025-02-05",
+      "time": "10:30",
+      "accountNumber": "1234-5678-9012-3456",
+      "merchantRecipient": "Online Electronics Store",
+      "amount": 500.00,
+      "descriptionNotes": "Unusual purchase of high-value electronics from a new IP address.",
+      "suspectedFraudType": "Card-Not-Present Fraud"
+    },
+    {
+      "transactionID": "TXN-002",
+      "date": "2025-02-10",
+      "time": "14:15",
+      "accountNumber": "9876-5432-1098-7654",
+      "merchantRecipient": "Unknown Recipient",
+      "amount": 100.00,
+      "descriptionNotes": "Multiple small transfers to an unrecognized recipient.",
+      "suspectedFraudType": "Account Takeover"
+    },
+    {
+      "transactionID": "TXN-003",
+      "date": "2025-02-15",
+      "time": "20:00",
+      "accountNumber": "1111-2222-3333-4444",
+      "merchantRecipient": "ATM - Foreign Country",
+      "amount": 200.00,
+      "descriptionNotes": "ATM withdrawal in a foreign country without prior notification.",
+      "suspectedFraudType": "ATM Fraud"
+    },
+    {
+      "transactionID": "TXN-004",
+      "date": "2025-02-20",
+      "time": "09:00",
+      "accountNumber": "5555-6666-7777-8888",
+      "merchantRecipient": "Suspicious Website",
+      "amount": 75.00,
+      "descriptionNotes": "Purchase from a website known for phishing.",
+      "suspectedFraudType": "Phishing/Card Fraud"
+    },
+    {
+      "transactionID": "TXN-005",
+      "date": "2025-02-25",
+      "time": "16:30",
+      "accountNumber": "9999-0000-1111-2222",
+      "merchantRecipient": "Online Gaming Platform",
+      "amount": 300.00,
+      "descriptionNotes": "Multiple purchases within a short time from a gaming platform.",
+      "suspectedFraudType": "Account Takeover/Card Testing"
+    }
+  ],
+  "trends": "Increase in card-not-present fraud.",
+  "patterns": "Transactions originating from suspicious IP addresses.",
+  "risk_factors": "Compromised account credentials, weak passwords.",
+  "actions_taken": "Affected accounts were temporarily suspended, customers were notified.",
+  "recommendations": "Implement multi-factor authentication, enhance fraud detection systems.",
+  "supporting_docs": "Transaction logs, IP address reports.",
+  "contact_name": "John Smith",
+  "contact_email": "john.smith@example.com",
+  "contact_phone": "555-123-4567"
+},
+{
+  "report_date": "2025-04-05",
+  "reporting_period_start": "2025-03-01",
+  "reporting_period_end": "2025-03-31",
+  "prepared_by": "Cybersecurity and Compliance Unit",
+  "executive_summary": "This report outlines 7 potential security breaches and unauthorized access attempts detected during March 2025.",
+  "transactions": [
+    {
+      "transactionID": "SEC-001",
+      "date": "2025-03-03",
+      "time": "02:15",
+      "accountNumber": "USER-1001",
+      "merchantRecipient": "Internal Server Logins",
+      "amount": null,
+      "descriptionNotes": "Multiple failed login attempts from an unknown external IP.",
+      "suspectedFraudType": "Brute Force Attack"
+    },
+    {
+      "transactionID": "SEC-002",
+      "date": "2025-03-08",
+      "time": "11:00",
+      "accountNumber": "FILE-SHARE-2001",
+      "merchantRecipient": "Cloud Storage Access",
+      "amount": null,
+      "descriptionNotes": "Unauthorized access to sensitive file shares outside of normal working hours.",
+      "suspectedFraudType": "Data Exfiltration"
+    },
+    {
+      "transactionID": "SEC-003",
+      "date": "2025-03-12",
+      "time": "18:45",
+      "accountNumber": "EMAIL-3001",
+      "merchantRecipient": "External Email Server",
+      "amount": null,
+      "descriptionNotes": "Suspicious email forwarding rule created on a high-level executive's account.",
+      "suspectedFraudType": "Email Compromise"
+    },
+    {
+      "transactionID": "SEC-004",
+      "date": "2025-03-17",
+      "time": "09:30",
+      "accountNumber": "DATABASE-4001",
+      "merchantRecipient": "Internal Database",
+      "amount": null,
+      "descriptionNotes": "Unusual SQL queries accessing sensitive customer data.",
+      "suspectedFraudType": "SQL Injection/Data Breach"
+    },
+    {
+      "transactionID": "SEC-005",
+      "date": "2025-03-22",
+      "time": "23:00",
+      "accountNumber": "VPN-5001",
+      "merchantRecipient": "Remote Access Server",
+      "amount": null,
+      "descriptionNotes": "VPN connection from a blacklisted IP address.",
+      "suspectedFraudType": "Unauthorized Remote Access"
+    },
+    {
+      "transactionID": "SEC-006",
+      "date": "2025-03-26",
+      "time": "14:20",
+      "accountNumber": "WEBSITE-6001",
+      "merchantRecipient": "Public Website",
+      "amount": null,
+      "descriptionNotes": "Increased traffic and requests indicating a potential DDoS attack.",
+      "suspectedFraudType": "Denial of Service"
+    },
+    {
+      "transactionID": "SEC-007",
+      "date": "2025-03-30",
+      "time": "08:00",
+      "accountNumber": "ENDPOINT-7001",
+      "merchantRecipient": "Employee Laptop",
+      "amount": null,
+      "descriptionNotes": "Detection of malware on an employee's laptop after visiting a compromised website.",
+      "suspectedFraudType": "Malware Infection"
+    }
+  ],
+  "trends": "Increased attempts at unauthorized access from external sources.",
+  "patterns": "Recurring login failures from specific IP ranges, unusual data access patterns.",
+  "risk_factors": "Outdated security patches, weak access controls, lack of user awareness.",
+  "actions_taken": "IP addresses blocked, affected accounts locked, systems scanned for malware.",
+  "recommendations": "Implement stricter access controls, update security software, conduct employee security training.",
+  "supporting_docs": "Server logs, network traffic analysis, incident reports.",
+  "contact_name": "Alice Johnson",
+  "contact_email": "alice.johnson@example.com",
+  "contact_phone": "555-987-6543"
+},
+{
+  "report_date": "2025-03-04",
+  "reporting_period_start": "2025-02-01",
+  "reporting_period_end": "2025-02-28",
+  "prepared_by": "Fraud Detection Department",
+  "executive_summary": "This report details 5 suspected fraudulent transactions identified in February 2025.",
+  "transactions": [
+    {
+      "transactionID": "TXN-001",
+      "date": "2025-02-05",
+      "time": "10:30",
+      "accountNumber": "1234-5678-9012-3456",
+      "merchantRecipient": "Online Electronics Store",
+      "amount": 500.00,
+      "descriptionNotes": "Unusual purchase of high-value electronics from a new IP address.",
+      "suspectedFraudType": "Card-Not-Present Fraud"
+    },
+    {
+      "transactionID": "TXN-002",
+      "date": "2025-02-10",
+      "time": "14:15",
+      "accountNumber": "9876-5432-1098-7654",
+      "merchantRecipient": "Unknown Recipient",
+      "amount": 100.00,
+      "descriptionNotes": "Multiple small transfers to an unrecognized recipient.",
+      "suspectedFraudType": "Account Takeover"
+    },
+    {
+      "transactionID": "TXN-003",
+      "date": "2025-02-15",
+      "time": "20:00",
+      "accountNumber": "1111-2222-3333-4444",
+      "merchantRecipient": "ATM - Foreign Country",
+      "amount": 200.00,
+      "descriptionNotes": "ATM withdrawal in a foreign country without prior notification.",
+      "suspectedFraudType": "ATM Fraud"
+    },
+    {
+      "transactionID": "TXN-004",
+      "date": "2025-02-20",
+      "time": "09:00",
+      "accountNumber": "5555-6666-7777-8888",
+      "merchantRecipient": "Suspicious Website",
+      "amount": 75.00,
+      "descriptionNotes": "Purchase from a website known for phishing.",
+      "suspectedFraudType": "Phishing/Card Fraud"
+    },
+    {
+      "transactionID": "TXN-005",
+      "date": "2025-02-25",
+      "time": "16:30",
+      "accountNumber": "9999-0000-1111-2222",
+      "merchantRecipient": "Online Gaming Platform",
+      "amount": 300.00,
+      "descriptionNotes": "Multiple purchases within a short time from a gaming platform.",
+      "suspectedFraudType": "Account Takeover/Card Testing"
+    }
+  ],
+  "trends": "Increase in card-not-present fraud.",
+  "patterns": "Transactions originating from suspicious IP addresses.",
+  "risk_factors": "Compromised account credentials, weak passwords.",
+  "actions_taken": "Affected accounts were temporarily suspended, customers were notified.",
+  "recommendations": "Implement multi-factor authentication, enhance fraud detection systems.",
+  "supporting_docs": "Transaction logs, IP address reports.",
+  "contact_name": "John Smith",
+  "contact_email": "john.smith@example.com",
+  "contact_phone": "555-123-4567"
+},
+{
+  "report_date": "2025-04-05",
+  "reporting_period_start": "2025-03-01",
+  "reporting_period_end": "2025-03-31",
+  "prepared_by": "Cybersecurity and Compliance Unit",
+  "executive_summary": "This report outlines 7 potential security breaches and unauthorized access attempts detected during March 2025.",
+  "transactions": [
+    {
+      "transactionID": "SEC-001",
+      "date": "2025-03-03",
+      "time": "02:15",
+      "accountNumber": "USER-1001",
+      "merchantRecipient": "Internal Server Logins",
+      "amount": null,
+      "descriptionNotes": "Multiple failed login attempts from an unknown external IP.",
+      "suspectedFraudType": "Brute Force Attack"
+    },
+    {
+      "transactionID": "SEC-002",
+      "date": "2025-03-08",
+      "time": "11:00",
+      "accountNumber": "FILE-SHARE-2001",
+      "merchantRecipient": "Cloud Storage Access",
+      "amount": null,
+      "descriptionNotes": "Unauthorized access to sensitive file shares outside of normal working hours.",
+      "suspectedFraudType": "Data Exfiltration"
+    },
+    {
+      "transactionID": "SEC-003",
+      "date": "2025-03-12",
+      "time": "18:45",
+      "accountNumber": "EMAIL-3001",
+      "merchantRecipient": "External Email Server",
+      "amount": null,
+      "descriptionNotes": "Suspicious email forwarding rule created on a high-level executive's account.",
+      "suspectedFraudType": "Email Compromise"
+    },
+    {
+      "transactionID": "SEC-004",
+      "date": "2025-03-17",
+      "time": "09:30",
+      "accountNumber": "DATABASE-4001",
+      "merchantRecipient": "Internal Database",
+      "amount": null,
+      "descriptionNotes": "Unusual SQL queries accessing sensitive customer data.",
+      "suspectedFraudType": "SQL Injection/Data Breach"
+    },
+    {
+      "transactionID": "SEC-005",
+      "date": "2025-03-22",
+      "time": "23:00",
+      "accountNumber": "VPN-5001",
+      "merchantRecipient": "Remote Access Server",
+      "amount": null,
+      "descriptionNotes": "VPN connection from a blacklisted IP address.",
+      "suspectedFraudType": "Unauthorized Remote Access"
+    },
+    {
+      "transactionID": "SEC-006",
+      "date": "2025-03-26",
+      "time": "14:20",
+      "accountNumber": "WEBSITE-6001",
+      "merchantRecipient": "Public Website",
+      "amount": null,
+      "descriptionNotes": "Increased traffic and requests indicating a potential DDoS attack.",
+      "suspectedFraudType": "Denial of Service"
+    },
+    {
+      "transactionID": "SEC-007",
+      "date": "2025-03-30",
+      "time": "08:00",
+      "accountNumber": "ENDPOINT-7001",
+      "merchantRecipient": "Employee Laptop",
+      "amount": null,
+      "descriptionNotes": "Detection of malware on an employee's laptop after visiting a compromised website.",
+      "suspectedFraudType": "Malware Infection"
+    }
+  ],
+  "trends": "Increased attempts at unauthorized access from external sources.",
+  "patterns": "Recurring login failures from specific IP ranges, unusual data access patterns.",
+  "risk_factors": "Outdated security patches, weak access controls, lack of user awareness.",
+  "actions_taken": "IP addresses blocked, affected accounts locked, systems scanned for malware.",
+  "recommendations": "Implement stricter access controls, update security software, conduct employee security training.",
+  "supporting_docs": "Server logs, network traffic analysis, incident reports.",
+  "contact_name": "Alice Johnson",
+  "contact_email": "alice.johnson@example.com",
+  "contact_phone": "555-987-6543"
 }
+]

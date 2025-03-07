@@ -4,3 +4,4 @@ langchain-google-genai
 Jinja2
 pandas
 tabulate
+google-cloud-secret-manager

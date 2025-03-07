@@ -7,12 +7,23 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.messages import HumanMessage, AIMessage
 from langchain_core.runnables import RunnableConfig
 
+from google.cloud import secretmanager
+
 from fraud_report import FraudReportGenerator
 from report_service import ReportService
 
 # Initialize ChatGoogleGenerativeAI (replace with your actual API key if needed)
 # If you're running this locally, set the API key as an environment variable
 # export GOOGLE_API_KEY="your_api_key"
+#
+# If environment variable is unset, try to fetch the API key secret from Secrets Manager
+
+if 'GOOGLE_API_KEY' not in os.environ:
+    client = secretmanager.SecretManagerServiceClient()
+    secret_name = f"projects/gemini-gdc-demo/secrets/gemini-api-key/versions/latest"
+    response = client.access_secret_version(request={"name": secret_name})
+    
+    os.environ["GOOGLE_API_KEY"] = response.payload.data.decode("utf-8")
 
 try:
     llm = ChatGoogleGenerativeAI(model="gemini-1.5-pro", temperature=0.3)

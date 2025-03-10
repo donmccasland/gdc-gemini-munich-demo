@@ -1,6 +1,7 @@
 import json
 import os
-from fraud_report import FraudReportGenerator
+from fraud_report import FraudReportGenerator, FraudReport
+import pydantic
 
 class ReportService:
     def __init__(self, report_file_path="multiple_reports.json"):
@@ -9,12 +10,13 @@ class ReportService:
         self.report_generator = FraudReportGenerator()
         self.reports = self._load_reports()
 
-    def _load_reports(self):
+    def _load_reports(self) -> list[FraudReport]:
         """Loads fraud reports from the specified JSON file."""
         if os.path.exists(self.report_file_path):
             try:
                 with open(self.report_file_path, "r") as f:
                     reports_data = json.load(f)
+                    reports_data = [FraudReport(**report) for report in reports_data]
                     return reports_data  # Assuming your file contains a list of reports
             except (json.JSONDecodeError, FileNotFoundError) as e:
                 print(f"Error loading reports: {e}")

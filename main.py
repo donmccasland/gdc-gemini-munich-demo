@@ -41,30 +41,23 @@ if "selected_report_data" not in st.session_state:
 
 def report_selection_page():
     all_reports = report_service.get_all_reports()
-    report_data = []
-    for report in all_reports:
-        report_data.append([report.get("report_date", "N/A"), report.get("prepared_by", "N/A"), report.get("executive_summary", "N/A")])
-
-    df = pd.DataFrame(report_data, columns=["Report Date", "Prepared By", "Summary"])
-
-    st.write("## Select a Report")
-
-    # Display table with buttons
-    if not df.empty:
-        for index, row in df.iterrows():
-            cols = st.columns([2, 1])  # Two columns: data and button
-            with cols[0]:
-                st.write(f"**Report Date:** {row['Report Date']}")
-                st.write(f"**Prepared By:** {row['Prepared By']}")
-                st.write(f"**Summary:** {row['Summary']}")
-            with cols[1]:
-                if st.button("View Report", key=f"view_report_{index}"):
-                    # Store the selected report data directly
-                    st.session_state["selected_report_data"] = report_service.get_all_reports()[index]
-                    st.session_state["page"] = "report_view"
-                    st.rerun()
-    else:
+    if not all_reports:
         st.write("No reports found.")
+        return
+
+    for report in all_reports:
+        cols = st.columns([2, 1])
+        with cols[0]:
+            st.write(f"**Report ID:** {report.report_id}")
+            st.write(f"**Report Date:** {report.report_date}")
+            st.write(f"**Prepared By:** {report.prepared_by}")
+            st.write(f"**Summary:** {report.executive_summary}")
+        with cols[1]:
+            if st.button("View Report", key=f"view_report_{report.report_id}"):
+                st.session_state["selected_report_data"] = report
+                st.session_state["page"] = "report_view"
+                st.rerun()
+
 
 def report_view_page():
     if st.button("Back to Reports"):

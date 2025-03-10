@@ -1,6 +1,51 @@
 import pandas as pd
 from jinja2 import Environment, Template
 import json
+from typing import List, Optional, Union
+from pydantic import BaseModel, Field
+
+class Transaction(BaseModel):
+    """
+    Represents a single transaction within a fraud or security report.
+    """
+    transactionID: str = Field(..., description="Unique identifier for the transaction.")
+    date: str = Field(..., description="Date of the transaction (YYYY-MM-DD).")
+    time: str = Field(..., description="Time of the transaction (HH:MM).")
+    accountNumber: str = Field(..., description="Account number involved in the transaction.")
+    merchantRecipient: str = Field(..., description="Merchant or recipient of the transaction.")
+    amount: Optional[float] = Field(None, description="Amount of the transaction (can be null for security events).")
+    descriptionNotes: str = Field(..., description="Description or notes about the transaction.")
+    suspectedFraudType: str = Field(..., description="Type of suspected fraud or security issue.")
+
+
+class FraudReport(BaseModel):
+    """
+    Represents a fraud or security report containing multiple transactions.
+    """
+    report_id: str = Field(..., description="Unique identifier for the report.")
+    report_date: str = Field(..., description="Date of the report (YYYY-MM-DD).")
+    reporting_period_start: str = Field(..., description="Start date of the reporting period (YYYY-MM-DD).")
+    reporting_period_end: str = Field(..., description="End date of the reporting period (YYYY-MM-DD).")
+    prepared_by: str = Field(..., description="Name of the department or person who prepared the report.")
+    executive_summary: str = Field(..., description="Executive summary of the report.")
+    transactions: List[Transaction] = Field(..., description="List of transactions in the report.")
+    trends: str = Field(..., description="Trends observed in the data.")
+    patterns: str = Field(..., description="Patterns observed in the data.")
+    risk_factors: str = Field(..., description="Risk factors identified.")
+    actions_taken: str = Field(..., description="Actions taken in response to the identified issues.")
+    recommendations: str = Field(..., description="Recommendations for future actions.")
+    supporting_docs: str = Field(..., description="Supporting documentation for the report.")
+    contact_name: str = Field(..., description="Contact name for the report.")
+    contact_email: str = Field(..., description="Contact email for the report.")
+    contact_phone: str = Field(..., description="Contact phone number for the report.")
+
+class FraudReportList(BaseModel):
+    """
+    Represents a list of FraudReports.
+    """
+    reports: List[FraudReport]
+
+
 
 class FraudReportGenerator:
     def __init__(self, template_str=None):
@@ -9,6 +54,10 @@ class FraudReportGenerator:
     def _default_template(self):
         return """
 # Fraud Report - {{ report_date }}
+
+## Report Details
+
+**Report ID:** {{ report_id }}
 
 **Reporting Period:** {{ reporting_period_start }} - {{ reporting_period_end }}
 
@@ -55,20 +104,6 @@ class FraudReportGenerator:
 """
     
     def generate_report(self, report_data):
-        # Check and correct the data structure
-        transactions = report_data.get("transactions", [])
-        if isinstance(transactions, list):
-            for transaction in transactions:
-              if isinstance(transaction, str):
-                try:
-                  transaction = json.loads(transaction)
-                except:
-                  print(f"Error loading transaction data: {transaction}")
-                  continue
-              if not isinstance(transaction, dict):
-                print(f"Invalid transaction data: {transaction}")
-                continue
-
         return self.template.render(report_data)
 
     @staticmethod

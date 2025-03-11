@@ -84,44 +84,50 @@ st.sidebar.title("Chat with Report")
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
-# Display chat history
-for message in st.session_state.messages:
-    with st.sidebar.chat_message(message["role"]):
-        st.markdown(message["content"])
+# Sidebar Chat
+with st.sidebar: 
+    # Prompt the user
+    prompt = st.chat_input("Ask a question")
+        
+    st.markdown("---")  # Add a horizontal rule for visual separation
 
-# Chat input
-if prompt := st.sidebar.chat_input("Ask a question"):
-    # Display user message in chat message container
-    st.sidebar.chat_message("user").markdown(prompt)
-    # Add user message to chat history
-    st.session_state.messages.append({"role": "user", "content": prompt})
+    if prompt:  
+        with st.sidebar.container():
+            full_response = ""
+            full_prompt = """
+                Fraud Report: {}
+                
+                User Query: {}
+                """.format(st.session_state["selected_report_data"], prompt)
 
-    prompt = """
-    Fraud Report: {}
+            # Stream the response from Gemini
+            try:
+                stream = llm.stream(
+                    [HumanMessage(content=full_prompt)],
+                    config=RunnableConfig(callbacks=None),
+                )
+            except Exception as e:
+                st.error(f"Error generating response: {e}")
+                st.stop()
 
-    User Query: {}
-    """.format(st.session_state["selected_report_data"], prompt)
+            for chunk in stream:
+                full_response += chunk.content
+        
+        # Add to chat history
+        st.session_state.messages.append({"role": "assistant", "content": full_response})
+        st.session_state.messages.append({"role": "user", "content": prompt})
+    
 
-    # Display assistant response in chat message container (with spinner)
-    with st.sidebar.chat_message("assistant"):
-        message_placeholder = st.empty()
-        full_response = ""
+    # Display chat history
+    for message in reversed(st.session_state.messages):
+        with st.sidebar.chat_message(message["role"]):
+            st.markdown(message["content"])    
 
-        # Stream the response from Gemini
-        try:
-            stream = llm.stream(
-                [HumanMessage(content=prompt)],
-                config=RunnableConfig(callbacks=None),
-            )
-        except Exception as e:
-            st.error(f"Error generating response: {e}")
-            st.stop()
 
-        for chunk in stream:
-            full_response += chunk.content
-            message_placeholder.markdown(full_response + "▌")
-        message_placeholder.markdown(full_response)
-
-    # Add assistant message to chat history
-    st.session_state.messages.append({"role": "assistant", "content": full_response})
+    #prompt = """
+    #Fraud Report: {}
+    #
+    #User Query: {}
+    #""".format(st.session_state["selected_report_data"], prompt)
+    #
 

@@ -1,16 +1,14 @@
-import streamlit as st
-import pandas as pd
-import json
 import os
 
-from langchain_google_genai import ChatGoogleGenerativeAI
-from langchain_core.messages import HumanMessage, AIMessage
-from langchain_core.runnables import RunnableConfig
-
+import streamlit as st
 from google.cloud import secretmanager
+from google import genai
+from langchain_core.messages import HumanMessage
+from langchain_core.runnables import RunnableConfig
+from langchain_google_genai import ChatGoogleGenerativeAI
 
 from fraud_report import FraudReportGenerator
-from report_service import ReportService
+from report_service import get_report_service
 
 # Initialize ChatGoogleGenerativeAI (replace with your actual API key if needed)
 # If you're running this locally, set the API key as an environment variable
@@ -27,11 +25,12 @@ if 'GOOGLE_API_KEY' not in os.environ:
 
 try:
     llm = ChatGoogleGenerativeAI(model="gemini-1.5-pro", temperature=0.3)
+    genai_client = genai.Client(vertexai=True, project="gemini-gdc-demo", location="us-central1")
 except Exception as e:
     st.error(f"Error initializing Gemini Pro: {e}")
     st.stop()
 
-report_service = ReportService("sample_data.json")
+report_service = get_report_service()
 report_generator = FraudReportGenerator()
 
 if "page" not in st.session_state:

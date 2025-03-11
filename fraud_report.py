@@ -1,31 +1,44 @@
-import pandas as pd
-from jinja2 import Environment, Template
 import json
-from typing import List, Optional, Union
+from datetime import date, datetime as dt
+from enum import Enum
+from typing import List, Optional
+
+from jinja2 import Environment
 from pydantic import BaseModel, Field
+
 
 class Transaction(BaseModel):
     """
     Represents a single transaction within a fraud or security report.
     """
-    transactionID: str = Field(..., description="Unique identifier for the transaction.")
-    date: str = Field(..., description="Date of the transaction (YYYY-MM-DD).")
-    time: str = Field(..., description="Time of the transaction (HH:MM).")
-    accountNumber: str = Field(..., description="Account number involved in the transaction.")
-    merchantRecipient: str = Field(..., description="Merchant or recipient of the transaction.")
-    amount: Optional[float] = Field(None, description="Amount of the transaction (can be null for security events).")
-    descriptionNotes: str = Field(..., description="Description or notes about the transaction.")
-    suspectedFraudType: str = Field(..., description="Type of suspected fraud or security issue.")
+
+    transaction_id: str = Field(..., description="Unique identifier for the transaction.")
+    datetime: dt = Field(..., description="Date and time the transaction was created.")
+    account_number: str = Field(..., description="Account number involved in the transaction.")
+    merchant_recipient: str = Field(..., description="Merchant or recipient of the transaction.")
+    location: str = Field(..., description="Location where the transaction occurred. Format: City, State, Country")
+    amount: Optional[float] = Field(..., description="Amount of the transaction (can be null for security events).")
+    currency: Optional[str] = Field(..., description="Currency of the transaction (can be null for security events).")
+    description_notes: str = Field(..., description="Description or notes about the transaction.")
+    suspected_fraud_type: str = Field(..., description="Type of suspected fraud or security issue.")
+    risk_score: int = Field(..., description="Risk score associated with the transaction. From 1 to 100.")
+
+
+class FraudReportStatus(str, Enum):
+    alert_review = "alert_review"
+    case_review = "case_review"
+    conclusion = "conclusion"
 
 
 class FraudReport(BaseModel):
     """
     Represents a fraud or security report containing multiple transactions.
     """
+
     report_id: str = Field(..., description="Unique identifier for the report.")
-    report_date: str = Field(..., description="Date of the report (YYYY-MM-DD).")
-    reporting_period_start: str = Field(..., description="Start date of the reporting period (YYYY-MM-DD).")
-    reporting_period_end: str = Field(..., description="End date of the reporting period (YYYY-MM-DD).")
+    report_date: date = Field(..., description="Date of the report (YYYY-MM-DD).")
+    reporting_period_start: date = Field(..., description="Start date of the reporting period (YYYY-MM-DD).")
+    reporting_period_end: date = Field(..., description="End date of the reporting period (YYYY-MM-DD).")
     prepared_by: str = Field(..., description="Name of the department or person who prepared the report.")
     executive_summary: str = Field(..., description="Executive summary of the report.")
     transactions: List[Transaction] = Field(..., description="List of transactions in the report.")
@@ -34,17 +47,21 @@ class FraudReport(BaseModel):
     risk_factors: str = Field(..., description="Risk factors identified.")
     actions_taken: str = Field(..., description="Actions taken in response to the identified issues.")
     recommendations: str = Field(..., description="Recommendations for future actions.")
-    supporting_docs: str = Field(..., description="Supporting documentation for the report.")
-    contact_name: str = Field(..., description="Contact name for the report.")
-    contact_email: str = Field(..., description="Contact email for the report.")
-    contact_phone: str = Field(..., description="Contact phone number for the report.")
+    client_name: str = Field(..., description="Name of the client the report is about.")
+    total_number_of_transactions: int = Field(
+        ...,
+        description="Total number of transactions by the client in given date range. "
+        "Including non-suspicious transactions.",
+    )
+    stage: FraudReportStatus = Field(..., description="Current status of the report.")
+
 
 class FraudReportList(BaseModel):
     """
     Represents a list of FraudReports.
     """
-    reports: List[FraudReport]
 
+    reports: List[FraudReport]
 
 
 class FraudReportGenerator:
@@ -67,12 +84,18 @@ class FraudReportGenerator:
 
 {{ executive_summary }}
 
-## Suspected Fraudulent Transactions
+## Transactions
 
-| Transaction ID | Date       | Time  | Account Number       | Merchant/Recipient      | Amount ($) | Description/Notes                                            | Suspected Fraud Type           |
-| -------------- | ---------- | ----- | -------------------- | ----------------------- | -------- | ------------------------------------------------------------ | ------------------------------ |
+**Total number of transactions:** {{ total_number_of_transactions }}
+
+**Suspicious transactions:** {{ transactions|length }}
+
+### Suspected Fraudulent Transactions
+
+| Transaction ID | Date       | Account Number       | Merchant/Recipient      | Location | Amount ($) | Description/Notes                                            | Suspected Fraud Type           |
+| -------------- | ---------- | -------------------- | ----------------------- | ---------| ---------- | ------------------------------------------------------------ | ------------------------------ |
 {% for transaction in transactions -%}
-| {{ transaction.transactionID }} | {{ transaction.date }} | {{ transaction.time }} | `{{ transaction.accountNumber }}` | {{ transaction.merchantRecipient }} | {{ transaction.amount|float|round(2) }} | {{ transaction.descriptionNotes }}                | {{ transaction.suspectedFraudType }} |
+| {{ transaction.transaction_id }} | {{ transaction.datetime }} | `{{ transaction.account_number }}` | {{ transaction.merchant_recipient }} | {{transaction.location}} | {{ transaction.amount|float|round(2) }} {{ transaction.currency }} | {{ transaction.description_notes }}                | {{ transaction.suspected_fraud_type }} |
 {% endfor %}
 
 ## Trends and Patterns
@@ -98,11 +121,9 @@ class FraudReportGenerator:
 
 ## Contact Information
 
-*   **Name:** {{ contact_name }}
-*   **Email:** {{ contact_email }}
-*   **Phone:** {{ contact_phone }}
+**Client Name:** {{ client_name }}
 """
-    
+
     def generate_report(self, report_data):
         return self.template.render(report_data)
 

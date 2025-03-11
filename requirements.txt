@@ -6,3 +6,5 @@ pandas
 tabulate
 google-cloud-secret-manager
 pydantic
+google-genai
+Faker

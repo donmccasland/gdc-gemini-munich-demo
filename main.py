@@ -75,7 +75,6 @@ def report_selection_page():
     query_params = st.experimental_get_query_params()
     if "report_id" in query_params:
         selected_report_id = query_params["report_id"][0]
-        print("Report ID: {}".format(selected_report_id))
 
         report = next((r for r in all_reports if r.report_id == selected_report_id), None)
         if report:
@@ -83,8 +82,6 @@ def report_selection_page():
             st.session_state["page"] = "report_view"
             st.experimental_set_query_params() # remove the parameters so that we do not stay in the same report
             st.rerun()
-        else:
-            print("How there be no report!?!?")
 
 
 def report_view_page():

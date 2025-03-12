@@ -71,16 +71,15 @@ def report_selection_page():
         unsafe_allow_html=True,
     )
 
-    # Handle URL parameter for report selection
-    query_params = st.experimental_get_query_params()
-    if "report_id" in query_params:
-        selected_report_id = query_params["report_id"][0]
+    # Get report id from query param
+    if st.query_params.get("report_id"):
+        selected_report_id = st.query_params.get("report_id")
 
         report = next((r for r in all_reports if r.report_id == selected_report_id), None)
         if report:
             st.session_state["selected_report_data"] = report
             st.session_state["page"] = "report_view"
-            st.experimental_set_query_params() # remove the parameters so that we do not stay in the same report
+            st.query_params.clear() 
             st.rerun()
 
 

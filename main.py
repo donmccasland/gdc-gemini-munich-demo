@@ -52,7 +52,8 @@ def report_selection_page():
             "Report ID": report.report_id,
             "Report Date": report.report_date,
             "Prepared By": report.prepared_by,
-            "Summary": report.executive_summary,
+            "Period Start":report.reporting_period_start,
+            "Period End": report.reporting_period_end,
             "View Report": report.report_id  
         })
 
@@ -66,7 +67,7 @@ def report_selection_page():
 
     # Display the DataFrame with links (escape=False needed for HTML)
     st.markdown(
-        df[["Report ID", "Report Date", "Prepared By", "Summary", "View Report"]].to_html(escape=False, index=False),
+        df[["Report ID", "Report Date", "Prepared By", "Period Start", "Period End", "View Report"]].to_html(escape=False, index=False),
         unsafe_allow_html=True,
     )
 

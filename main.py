@@ -7,6 +7,8 @@ from langchain_core.messages import HumanMessage
 from langchain_core.runnables import RunnableConfig
 from langchain_google_genai import ChatGoogleGenerativeAI
 
+import pandas as pd
+
 from fraud_report import FraudReportGenerator
 from report_service import get_report_service
 
@@ -44,18 +46,44 @@ def report_selection_page():
         st.write("No reports found.")
         return
 
+    report_data = []
     for report in all_reports:
-        cols = st.columns([2, 1])
-        with cols[0]:
-            st.write(f"**Report ID:** {report.report_id}")
-            st.write(f"**Report Date:** {report.report_date}")
-            st.write(f"**Prepared By:** {report.prepared_by}")
-            st.write(f"**Summary:** {report.executive_summary}")
-        with cols[1]:
-            if st.button("View Report", key=f"view_report_{report.report_id}"):
-                st.session_state["selected_report_data"] = report
-                st.session_state["page"] = "report_view"
-                st.rerun()
+        report_data.append({
+            "Report ID": report.report_id,
+            "Report Date": report.report_date,
+            "Prepared By": report.prepared_by,
+            "Summary": report.executive_summary,
+            "View Report": report.report_id  
+        })
+
+    df = pd.DataFrame(report_data)
+
+    # Convert "View Report" column to clickable links
+    def make_clickable_link(report_id):
+        return f'<a href="?report_id={report_id}" target="_self">View Report</a>'
+
+    df["View Report"] = df["View Report"].apply(make_clickable_link)
+
+    # Display the DataFrame with links (escape=False needed for HTML)
+    st.markdown(
+        df[["Report ID", "Report Date", "Prepared By", "Summary", "View Report"]].to_html(escape=False, index=False),
+        unsafe_allow_html=True,
+    )
+
+    # Handle URL parameter for report selection
+    query_params = st.experimental_get_query_params()
+    if "report_id" in query_params:
+        selected_report_id = query_params["report_id"][0]
+        print("Report ID: {}".format(selected_report_id))
+
+        report = next((r for r in all_reports if r.report_id == selected_report_id), None)
+        if report:
+            st.session_state["selected_report_data"] = report
+            st.session_state["page"] = "report_view"
+            st.experimental_set_query_params() # remove the parameters so that we do not stay in the same report
+            st.rerun()
+        else:
+            print("How there be no report!?!?")
 
 
 def report_view_page():
@@ -122,11 +150,4 @@ with st.sidebar:
         with st.sidebar.chat_message(message["role"]):
             st.markdown(message["content"])    
 
-
-    #prompt = """
-    #Fraud Report: {}
-    #
-    #User Query: {}
-    #""".format(st.session_state["selected_report_data"], prompt)
-    #
 

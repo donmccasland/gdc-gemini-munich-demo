@@ -53,7 +53,7 @@ class ReportService:
             print(f"Report file not found: {self.report_file_path}")
             return []
 
-    def get_all_reports(self):
+    def get_all_reports(self) -> list[FraudReport]:
         """Returns all loaded fraud reports."""
         return self.reports
 

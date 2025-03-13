@@ -1,9 +1,10 @@
+import json
 import os
 
 import streamlit as st
 from google.cloud import secretmanager
 from google import genai
-from langchain_core.messages import HumanMessage
+from langchain_core.messages import HumanMessage, AIMessage
 from langchain_core.runnables import RunnableConfig
 from langchain_google_genai import ChatGoogleGenerativeAI
 
@@ -246,17 +247,33 @@ with st.sidebar:
 
     if prompt:  
         with st.sidebar.container():
+            chat_history = []
+            for msg in st.session_state.messages:
+                if msg["role"] == "user":
+                    chat_history.append(HumanMessage(content=msg["content"]))
+                elif msg["role"] == "assistant":
+                    chat_history.append(AIMessage(content=msg["content"]))
+
+            if st.session_state["page"] == "report_selection":
+                attach_data = "\n".join(fr.model_dump_json() for fr in report_service.get_all_reports())
+                data_desc = "Here is the data of all available fraud reports: "
+            elif st.session_state["page"] == "report_view":
+                attach_data = json.dumps(st.session_state["selected_report_data"])
+                data_desc = "Here is the data of currently inspected fraud report: "
+
             full_response = ""
-            full_prompt = """
-                Fraud Report: {}
+            full_prompt = f"""
+                {data_desc}
+                {attach_data}
                 
-                User Query: {}
-                """.format(st.session_state["selected_report_data"], prompt)
+                User Query: {prompt}
+                """
 
             # Stream the response from Gemini
             try:
+                print(chat_history + [HumanMessage(content=prompt)])
                 stream = llm.stream(
-                    [HumanMessage(content=full_prompt)],
+                    chat_history + [HumanMessage(content=full_prompt)],
                     config=RunnableConfig(callbacks=None),
                 )
             except Exception as e:
@@ -267,13 +284,11 @@ with st.sidebar:
                 full_response += chunk.content
         
         # Add to chat history
-        st.session_state.messages.append({"role": "assistant", "content": full_response})
         st.session_state.messages.append({"role": "user", "content": prompt})
-    
+        st.session_state.messages.append({"role": "assistant", "content": full_response})
+
 
     # Display chat history
     for message in reversed(st.session_state.messages):
         with st.sidebar.chat_message(message["role"]):
-            st.markdown(message["content"])    
-
-
+            st.markdown(message["content"])

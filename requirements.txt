@@ -8,3 +8,6 @@ google-cloud-secret-manager
 pydantic
 google-genai
 Faker
+plotly
+streamlit-extras
+altair

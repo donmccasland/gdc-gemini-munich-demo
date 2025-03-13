@@ -8,8 +8,9 @@ from langchain_core.runnables import RunnableConfig
 from langchain_google_genai import ChatGoogleGenerativeAI
 
 import pandas as pd
+import plotly.graph_objects as go
 
-from fraud_report import FraudReportGenerator
+from fraud_report import FraudReportGenerator, FraudReport
 from report_service import get_report_service
 
 # Initialize ChatGoogleGenerativeAI (replace with your actual API key if needed)
@@ -32,6 +33,56 @@ except Exception as e:
     st.error(f"Error initializing Gemini Pro: {e}")
     st.stop()
 
+#######################
+# CSS styling
+st.markdown("""
+<style>
+
+[data-testid="block-container"] {
+    padding-left: 2rem;
+    padding-right: 2rem;
+    padding-top: 1rem;
+    padding-bottom: 0rem;
+    margin-bottom: -7rem;
+}
+
+[data-testid="stVerticalBlock"] {
+    padding-left: 0rem;
+    padding-right: 0rem;
+}
+
+[data-testid="stMetric"] {
+    background-color: #393939;
+    text-align: center;
+    padding: 15px 0;
+    height: 150px;
+}
+
+[data-testid="stMetricLabel"] {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+[data-testid="stMetricDeltaIcon-Up"] {
+    position: relative;
+    left: 38%;
+    -webkit-transform: translateX(-50%);
+    -ms-transform: translateX(-50%);
+    transform: translateX(-50%);
+}
+
+[data-testid="stMetricDeltaIcon-Down"] {
+    position: relative;
+    left: 38%;
+    -webkit-transform: translateX(-50%);
+    -ms-transform: translateX(-50%);
+    transform: translateX(-50%);
+}
+
+</style>
+""", unsafe_allow_html=True)
+
 report_service = get_report_service()
 report_generator = FraudReportGenerator()
 
@@ -40,11 +91,71 @@ if "page" not in st.session_state:
 if "selected_report_data" not in st.session_state:
   st.session_state["selected_report_data"] = None
 
+def calculate_dashboard_stats(all_reports: list[FraudReport]):
+    """Calculates dashboard statistics from a list of reports."""
+    total_reports = len(all_reports)
+    total_fraud_transactions = 0
+    total_transactions = 0
+
+    for report in all_reports:
+        total_fraud_transactions += len(report.transactions)
+        total_transactions += report.total_number_of_transactions
+
+    if total_transactions > 0:
+        fraud_percentage = (total_fraud_transactions / total_transactions) * 100
+    else:
+        fraud_percentage = 0
+
+    return {
+        "total_reports": total_reports,
+        "fraud_percentage": fraud_percentage,
+        "total_fraud_transactions": total_fraud_transactions,
+        "total_transactions": total_transactions,
+    }
+
+def display_dashboard(stats):
+    col1, col2, col3, col4 = st.columns(4)
+
+    with col1:
+        st.metric("Total Reports", stats["total_reports"])
+
+    with col2:
+        # Create a pie chart for fraud percentage
+        fig = go.Figure(data=[go.Pie(labels=['Fraudulent', 'Non-Fraudulent'],
+                                     values=[stats['fraud_percentage'], 100 - stats['fraud_percentage']],
+                                     hole=.3,
+                                     marker_colors=['#FF4B4B', '#4CAF50'],
+                                     hovertemplate='<b>%{label}</b><br>Percentage: %{percent}<extra></extra>')])
+        fig.update_layout(
+            showlegend=False,
+            margin=dict(l=0, r=0, b=0, t=0),
+            height=150,  # Set the desired height here
+            plot_bgcolor="#393939",  # Set the background color here
+            paper_bgcolor="#393939",  # Set the background color here
+        )
+        fig.update_traces(textinfo='percent', textfont_size=14)
+
+        st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': False})
+
+    with col3:
+        st.metric("Total Fraud Transactions", stats["total_fraud_transactions"])
+
+    with col4:
+        st.metric("Total Transactions", stats["total_transactions"])
+
 def report_selection_page():
     all_reports = report_service.get_all_reports()
     if not all_reports:
         st.write("No reports found.")
         return
+    
+    # Calculate and display dashboard stats
+    stats = calculate_dashboard_stats(all_reports)
+    
+    # Create a container for the dashboard
+    dashboard_container = st.container()
+    with dashboard_container:
+        display_dashboard(stats)
 
     report_data = []
     for report in all_reports:

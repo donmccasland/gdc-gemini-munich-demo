@@ -214,7 +214,7 @@ elif page_name == "report_view":
     report_view_page()
 
 # Sidebar Chat
-st.sidebar.title("Chat with Report")
+st.sidebar.title("Farud Analysis Assistant")
 if "messages" not in st.session_state:
     st.session_state.messages = []
 

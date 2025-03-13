@@ -34,27 +34,39 @@ except Exception as e:
     st.error(f"Error initializing Gemini Pro: {e}")
     st.stop()
 
+#    font-size: 18px;
+#    font-weight: 500;
+#    color: #091747;
 # CSS styling
 st.markdown("""
 <style>
+
+@import url('https://fonts.googleapis.com/css2?family=Google+Sans+Flex');
+
+body, * {
+    font-family: 'Google Sans Flex', Arial, sans-serif !important;
+}
 
 [data-testid="block-container"] {
     padding-left: 2rem;
     padding-right: 2rem;
     padding-top: 1rem;
     padding-bottom: 0rem;
+    border-radius: 30px;
     margin-bottom: -7rem;
 }
 
 [data-testid="stVerticalBlock"] {
     padding-left: 0rem;
     padding-right: 0rem;
+    border-radius: 30px;
 }
 
 [data-testid="stMetric"] {
     background-color: #393939;
     text-align: center;
     padding: 15px 0;
+    border-radius: 30px;
     height: 150px;
 }
 
@@ -215,7 +227,7 @@ elif page_name == "report_view":
     report_view_page()
 
 # Sidebar Chat
-st.sidebar.title("Farud Analysis Assistant")
+st.sidebar.title("Fraud Analysis Assistant")
 if "messages" not in st.session_state:
     st.session_state.messages = []
 

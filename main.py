@@ -258,7 +258,7 @@ with st.sidebar:
                 attach_data = "\n".join(fr.model_dump_json() for fr in report_service.get_all_reports())
                 data_desc = "Here is the data of all available fraud reports: "
             elif st.session_state["page"] == "report_view":
-                attach_data = json.dumps(st.session_state["selected_report_data"])
+                attach_data = json.dumps(st.session_state["selected_report_data"].model_dump_json())
                 data_desc = "Here is the data of currently inspected fraud report: "
 
             full_response = ""

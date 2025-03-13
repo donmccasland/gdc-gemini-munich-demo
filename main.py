@@ -14,6 +14,9 @@ import plotly.graph_objects as go
 from fraud_report import FraudReportGenerator, FraudReport
 from report_service import get_report_service
 
+# st.set_page_config has to be the very first st command called
+st.set_page_config(layout="wide")
+
 # Initialize ChatGoogleGenerativeAI (replace with your actual API key if needed)
 # If you're running this locally, set the API key as an environment variable
 # export GOOGLE_API_KEY="your_api_key"
@@ -34,10 +37,6 @@ except Exception as e:
     st.error(f"Error initializing Gemini Pro: {e}")
     st.stop()
 
-#    font-size: 18px;
-#    font-weight: 500;
-#    color: #091747;
-# CSS styling
 st.markdown("""
 <style>
 
@@ -46,6 +45,8 @@ st.markdown("""
 body, * {
     font-family: 'Google Sans Flex', Arial, sans-serif !important;
 }
+
+.fullHeight {height : 80vh; width : 100%}
 
 [data-testid="block-container"] {
     padding-left: 2rem;
@@ -97,6 +98,8 @@ body, * {
 
 report_service = get_report_service()
 report_generator = FraudReportGenerator()
+
+col1, col2 = st.columns([0.8, 0.2], border=True)
 
 if "page" not in st.session_state:
     st.session_state["page"] = "report_selection"
@@ -150,10 +153,10 @@ def display_dashboard(stats):
         st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': False})
 
     with col3:
-        st.metric("Total Fraud Transactions", stats["total_fraud_transactions"])
+        st.metric("24h Fraud Transactions", stats["total_fraud_transactions"])
 
     with col4:
-        st.metric("Total Transactions", stats["total_transactions"])
+        st.metric("24h Transactions", stats["total_transactions"])
 
 def report_selection_page():
     all_reports = report_service.get_all_reports()
@@ -221,32 +224,32 @@ def report_view_page():
 
 page_name = st.session_state["page"]
 
-if page_name == "report_selection":
-    report_selection_page()
-elif page_name == "report_view":
-    report_view_page()
+with col1:
+    if page_name == "report_selection":
+        report_selection_page()
+    elif page_name == "report_view":
+        report_view_page()
 
-# Sidebar Chat
-st.sidebar.title("Fraud Analysis Assistant")
-if "messages" not in st.session_state:
-    st.session_state.messages = []
+with col2:
+    # Sidebar Chat
+    st.title("Fraud Analysis Assistant")
+    if "messages" not in st.session_state:
+        st.session_state.messages = []
 
-# Predefined questions
-predefined_questions = {
-    "report_view" : [
-        "What are the key trends identified in the treansactions?",
-        "What are the main risk factors mentioned?",
-        "What actions were taken in response to the fraud?",
-        "What recommendations are made for future actions?",
-        "Can you summarise the executive summary?",
-    ],
-    "report_selection" : [
-        "Any common patterns in all reports in this list?"
-    ]
-}
+    # Predefined questions
+    predefined_questions = {
+        "report_view" : [
+            "What are the key trends identified in the treansactions?",
+            "What are the main risk factors mentioned?",
+            "What actions were taken in response to the fraud?",
+            "What recommendations are made for future actions?",
+            "Can you summarise the executive summary?",
+        ],
+        "report_selection" : [
+            "Any common patterns in all reports in this list?"
+        ]
+    }
 
-# Sidebar Chat
-with st.sidebar: 
     # Prompt the user
     prompt = st.chat_input("Ask a question")
 
@@ -258,7 +261,7 @@ with st.sidebar:
     st.markdown("---")  # Add a horizontal rule for visual separation
 
     if prompt:  
-        with st.sidebar.container():
+        with st.container():
             chat_history = []
             for msg in st.session_state.messages:
                 if msg["role"] == "user":
@@ -302,5 +305,5 @@ with st.sidebar:
 
     # Display chat history
     for message in reversed(st.session_state.messages):
-        with st.sidebar.chat_message(message["role"]):
+        with st.chat_message(message["role"]):
             st.markdown(message["content"])

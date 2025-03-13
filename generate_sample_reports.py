@@ -11,7 +11,7 @@ from google.genai.types import GenerateContentConfig
 
 from fraud_report import *
 
-client = genai.Client(vertexai=True, project='mestiv-playground', location='us-central1')
+client = genai.Client(vertexai=True, project='gemini-gdc-demo', location='us-central1')
 fake = Faker()
 fake.add_provider(bank)
 

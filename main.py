@@ -33,7 +33,6 @@ except Exception as e:
     st.error(f"Error initializing Gemini Pro: {e}")
     st.stop()
 
-#######################
 # CSS styling
 st.markdown("""
 <style>
@@ -219,10 +218,29 @@ st.sidebar.title("Chat with Report")
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
+# Predefined questions
+predefined_questions = {
+    "report_view" : [
+        "What are the key trends identified in the treansactions?",
+        "What are the main risk factors mentioned?",
+        "What actions were taken in response to the fraud?",
+        "What recommendations are made for future actions?",
+        "Can you summarise the executive summary?",
+    ],
+    "report_selection" : [
+        "Any common patterns in all reports in this list?"
+    ]
+}
+
 # Sidebar Chat
 with st.sidebar: 
     # Prompt the user
     prompt = st.chat_input("Ask a question")
+
+    # Dropdown for predefined questions
+    selected_question = st.selectbox("Or choose a predefined question:", [""] + predefined_questions[page_name])
+    if selected_question:
+        prompt = selected_question
         
     st.markdown("---")  # Add a horizontal rule for visual separation
 

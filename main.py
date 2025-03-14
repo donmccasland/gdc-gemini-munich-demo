@@ -135,22 +135,8 @@ def display_dashboard(stats):
         st.metric("Total Reports", stats["total_reports"])
 
     with col2:
-        # Create a pie chart for fraud percentage
-        fig = go.Figure(data=[go.Pie(labels=['Fraudulent', 'Non-Fraudulent'],
-                                     values=[stats['fraud_percentage'], 100 - stats['fraud_percentage']],
-                                     hole=.3,
-                                     marker_colors=['#FF4B4B', '#4CAF50'],
-                                     hovertemplate='<b>%{label}</b><br>Percentage: %{percent}<extra></extra>')])
-        fig.update_layout(
-            showlegend=False,
-            margin=dict(l=0, r=0, b=0, t=0),
-            height=150,  # Set the desired height here
-            plot_bgcolor="#393939",  # Set the background color here
-            paper_bgcolor="#393939",  # Set the background color here
-        )
-        fig.update_traces(textinfo='percent', textfont_size=14)
-
-        st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': False})
+        formatted_fraud_percentage = f"{stats['fraud_percentage']:.2f}%"
+        st.metric("24h Fraud Percentage", formatted_fraud_percentage)
 
     with col3:
         st.metric("24h Fraud Transactions", stats["total_fraud_transactions"])

@@ -104,7 +104,10 @@ col1, col2 = st.columns([0.8, 0.2], border=True)
 if "page" not in st.session_state:
     st.session_state["page"] = "report_selection"
 if "selected_report_data" not in st.session_state:
-  st.session_state["selected_report_data"] = None
+    st.session_state["selected_report_data"] = None
+
+if "messages" not in st.session_state:
+    st.session_state.messages = []
 
 def calculate_dashboard_stats(all_reports: list[FraudReport]):
     """Calculates dashboard statistics from a list of reports."""
@@ -216,11 +219,10 @@ with col1:
     elif page_name == "report_view":
         report_view_page()
 
+# Sidebar Chat
+# Sidebar Chat
 with col2:
-    # Sidebar Chat
     st.title("Fraud Analysis Assistant")
-    if "messages" not in st.session_state:
-        st.session_state.messages = []
 
     # Predefined questions
     predefined_questions = {
@@ -238,6 +240,7 @@ with col2:
 
     # Prompt the user
     prompt = st.chat_input("Ask a question")
+    response = ""
 
     # Dropdown for predefined questions
     selected_question = st.selectbox("Or choose a predefined question:", [""] + predefined_questions[page_name])
@@ -246,50 +249,69 @@ with col2:
         
     st.markdown("---")  # Add a horizontal rule for visual separation
 
-    if prompt:  
-        with st.container():
-            chat_history = []
-            for msg in st.session_state.messages:
-                if msg["role"] == "user":
-                    chat_history.append(HumanMessage(content=msg["content"]))
-                elif msg["role"] == "assistant":
-                    chat_history.append(AIMessage(content=msg["content"]))
+    messages_container = st.container()
 
-            if st.session_state["page"] == "report_selection":
-                attach_data = "\n".join(fr.model_dump_json() for fr in report_service.get_all_reports())
-                data_desc = "Here is the data of all available fraud reports: "
-            elif st.session_state["page"] == "report_view":
-                attach_data = json.dumps(st.session_state["selected_report_data"].model_dump_json())
-                data_desc = "Here is the data of currently inspected fraud report: "
+    with messages_container:
+        # Display chat history
+        for message in st.session_state.messages:
+            with st.chat_message(message["role"]):
+                st.markdown(message["content"])
 
-            full_response = ""
-            full_prompt = f"""
-                {data_desc}
-                {attach_data}
-                
-                User Query: {prompt}
-                """
+    if prompt:
+        with messages_container:
+            # Display user message immediately
+            with st.chat_message("user"):
+                st.markdown(prompt)
 
-            # Stream the response from Gemini
-            try:
-                print(chat_history + [HumanMessage(content=prompt)])
-                stream = llm.stream(
-                    chat_history + [HumanMessage(content=full_prompt)],
-                    config=RunnableConfig(callbacks=None),
-                )
-            except Exception as e:
-                st.error(f"Error generating response: {e}")
-                st.stop()
+            with st.chat_message("assistant"):
+                message_placeholder = st.empty()
+                full_response = ""
 
-            for chunk in stream:
-                full_response += chunk.content
-        
-        # Add to chat history
-        st.session_state.messages.append({"role": "user", "content": prompt})
-        st.session_state.messages.append({"role": "assistant", "content": full_response})
+                chat_history = []
+                for msg in st.session_state.messages:
+                    if msg["role"] == "user":
+                        chat_history.append(HumanMessage(content=msg["content"]))
+                    elif msg["role"] == "assistant":
+                        chat_history.append(AIMessage(content=msg["content"]))
 
+                if st.session_state["page"] == "report_selection":
+                    attach_data = "\n".join(fr.model_dump_json() for fr in report_service.get_all_reports())
+                    data_desc = "Here is the data of all available fraud reports: "
+                elif st.session_state["page"] == "report_view":
+                    attach_data = json.dumps(st.session_state["selected_report_data"].model_dump_json())
+                    data_desc = "Here is the data of currently inspected fraud report: "
 
-    # Display chat history
-    for message in reversed(st.session_state.messages):
-        with st.chat_message(message["role"]):
-            st.markdown(message["content"])
+                full_prompt = f"""
+                    {data_desc}
+                    {attach_data}
+
+                    User Query: {prompt}
+                    """
+
+                # Stream the response from Gemini
+                try:
+                    stream = llm.stream(
+                        chat_history + [HumanMessage(content=full_prompt)],
+                        config=RunnableConfig(callbacks=None),
+                    )
+                except Exception as e:
+                    st.error(f"Error generating response: {e}")
+                    st.stop()
+
+                for chunk in stream:
+                    full_response += chunk.content
+                    message_placeholder.markdown(full_response + "▌")
+                message_placeholder.markdown(full_response)
+            
+            # Add to chat history
+            st.session_state.messages.append({"role": "user", "content": prompt})
+            
+            # Only add the bot response if it exists
+            if full_response:
+                st.session_state.messages.append({"role": "assistant", "content": full_response})
+                # Clear the prompt after processing
+                prompt = ""
+                st.rerun()
+
+    
+            

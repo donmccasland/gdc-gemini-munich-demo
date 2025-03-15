@@ -249,7 +249,7 @@ with col2:
         
     st.markdown("---")  # Add a horizontal rule for visual separation
 
-    messages_container = st.container()
+    messages_container = st.container(height=500)
 
     with messages_container:
         # Display chat history
@@ -312,6 +312,4 @@ with col2:
                 # Clear the prompt after processing
                 prompt = ""
                 st.rerun()
-
-    
-            
+        

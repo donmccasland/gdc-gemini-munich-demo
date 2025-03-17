@@ -4,6 +4,7 @@ import os
 import random
 import time
 import uuid
+from generate_sample_reports import generate_report
 
 from faker import Faker
 from google.genai.types import GenerateContentConfig
@@ -58,44 +59,9 @@ class ReportService:
         return self.reports
 
     def generate_new_report(self):
-        from main import genai_client
-        start = time.time()
-        response = genai_client.models.generate_content(
-            model='gemini-2.0-flash',
-            contents=f'Generate an example fraud report following the given schema. '
-                     f'The report should feature between 2 and 8 fraudulent transactions.'
-                     f'Current date is {datetime.datetime.now()}, make the reports as recent as possible.',
-            config=GenerateContentConfig(
-                temperature=0.8,
-                candidate_count=1,
-                response_mime_type='application/json',
-                response_schema=FraudReport,
-            ),
-        )
-        print(f"New fraud report generated in: {time.time()-start}s")
-        fr = FraudReport.model_validate_json(response.text)
-        fr.report_id = uuid.uuid4().hex[:10].upper()
-        fr.client_name = fake.name()
-        fr.total_number_of_transactions = int(len(fr.transactions) / (random.random() / 10))
-        for transaction in fr.transactions:
-            transaction.transaction_id = uuid.uuid4().hex[:16].upper()
-            transaction.datetime = self._random_datetime(fr.reporting_period_start, fr.reporting_period_end)
-            transaction.account_number = fake.iban()
-            transaction.amount = random.randint(100, 50000) if transaction.amount else transaction.amount
-        start = time.time()
-        response = genai_client.models.generate_content(
-            model='gemini-2.0-flash',
-            contents=f"Generate a summary fo the following fraud report: {fr.model_dump_json()}",
-            config=GenerateContentConfig(
-                temperature=0.2,
-                candidate_count=1,
-                response_mime_type='text/plain',
-            )
-        )
-        print(f"Generated summary of the fraud report in: {time.time()-start}s")
-        fr.executive_summary = response.text
-        self.reports.append(fr)
-        return fr
+        new_report = generate_report()
+        self.reports.append(new_report)
+        self.reports.sort(key=lambda x: x.report_date, reverse=True)
 
 
 

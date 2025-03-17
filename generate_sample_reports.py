@@ -24,7 +24,7 @@ def random_datetime(start, end):
     return datetime.datetime(start.year, start.month, start.day) + datetime.timedelta(seconds=random_second)
 
 
-for i in range(1, 50):
+def generate_report() -> FraudReport:
     start = time.time()
     response = client.models.generate_content(
         model='gemini-2.0-flash',
@@ -60,8 +60,17 @@ for i in range(1, 50):
     )
     print(f"Generated summary of the fraud report in: {time.time() - start}s")
     fr.executive_summary = response.text
-    reports.append(fr.model_dump(mode='json'))
+    return fr
 
-with open('sample_data2.json', mode="wt") as out:
-    json.dump(reports, out, indent=2)
+
+def main():
+    for i in range(1, 50):
+        fr = generate_report()
+        reports.append(fr.model_dump(mode='json'))
+
+    with open('sample_data2.json', mode="wt") as out:
+        json.dump(reports, out, indent=2)
+
+if __name__ == '__main__':
+    main()
 

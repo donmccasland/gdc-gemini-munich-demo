@@ -1,5 +1,7 @@
+import asyncio
 import json
 import os
+import random
 
 import streamlit as st
 from google.cloud import secretmanager
@@ -31,7 +33,7 @@ if 'GOOGLE_API_KEY' not in os.environ:
     os.environ["GOOGLE_API_KEY"] = response.payload.data.decode("utf-8")
 
 try:
-    llm = ChatGoogleGenerativeAI(model="gemini-1.5-pro", temperature=0.3)
+    llm = ChatGoogleGenerativeAI(model="gemini-2.0-flash", temperature=0)
     genai_client = genai.Client(vertexai=True, project="gemini-gdc-demo", location="us-central1")
 except Exception as e:
     st.error(f"Error initializing Gemini Pro: {e}")
@@ -44,6 +46,10 @@ st.markdown("""
 
 body, * {
     font-family: 'Google Sans Flex', Arial, sans-serif !important;
+}
+
+table {
+    width: 100%;
 }
 
 .fullHeight {height : 80vh; width : 100%}
@@ -100,6 +106,7 @@ report_service = get_report_service()
 report_generator = FraudReportGenerator()
 
 col1, col2 = st.columns([0.8, 0.2], border=True)
+dashboard_container = None
 
 if "page" not in st.session_state:
     st.session_state["page"] = "report_selection"
@@ -157,8 +164,9 @@ def report_selection_page():
     stats = calculate_dashboard_stats(all_reports)
     
     # Create a container for the dashboard
-    dashboard_container = st.container()
-    with dashboard_container:
+    global dashboard_container
+    dashboard_container = st.empty()
+    with dashboard_container.container():
         display_dashboard(stats)
 
     report_data = []
@@ -214,10 +222,12 @@ def report_view_page():
 page_name = st.session_state["page"]
 
 with col1:
-    if page_name == "report_selection":
-        report_selection_page()
-    elif page_name == "report_view":
-        report_view_page()
+    col1_container = st.empty()
+    with col1_container.container():
+        if page_name == "report_selection":
+            report_selection_page()
+        elif page_name == "report_view":
+            report_view_page()
 
 # Sidebar Chat
 with col2:
@@ -226,7 +236,7 @@ with col2:
     # Predefined questions
     predefined_questions = {
         "report_view" : [
-            "What are the key trends identified in the treansactions?",
+            "What are the key trends identified in the transactions?",
             "What are the main risk factors mentioned?",
             "What actions were taken in response to the fraud?",
             "What recommendations are made for future actions?",
@@ -306,6 +316,9 @@ with col2:
                     {data_desc}
                     {attach_data}
 
+                    The data may have been updated since the last messagein conversation, so please make sure you
+                    check you answers - if it's still applicable.
+
                     User Query: {prompt}
                     """
 
@@ -333,4 +346,12 @@ with col2:
                 # Clear the prompt after processing
                 st.session_state.prompt = ""
                 st.rerun()
-        
+
+async def test_ticker(col):
+    while True:
+        report_service.generate_new_report()
+        with col1_container.container():
+            report_selection_page()
+            await asyncio.sleep(10)
+
+asyncio.run(test_ticker(col1))

@@ -29,7 +29,7 @@ class ReportService:
         self.report_file_path = report_file_path
         self.report_generator = FraudReportGenerator()
         self.reports = self._load_reports()
-        self.reports = random.sample(self.reports, 10)
+        self.reports = random.sample(self.reports, 50)
         self.reports.sort(key=lambda x: x.report_date, reverse=True)
 
     @staticmethod

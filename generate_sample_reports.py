@@ -3,6 +3,7 @@ import json
 import random
 import time
 import uuid
+from multiprocessing import Pool, cpu_count
 
 from faker import Faker
 from faker.providers import bank
@@ -62,11 +63,24 @@ def generate_report() -> FraudReport:
     fr.executive_summary = response.text
     return fr
 
+def generate_report_wrapper(i):
+    fr = generate_report()
+    return fr.model_dump(mode='json')
 
 def main():
-    for i in range(1, 50):
-        fr = generate_report()
-        reports.append(fr.model_dump(mode='json'))
+    num_reports = 500
+    num_processes = cpu_count()
+
+    print(f"Generating {num_reports} reports using {num_processes} processes...")
+
+    start_time = time.time()
+
+    with Pool(processes=num_processes) as pool:
+        reports = pool.map(generate_report_wrapper, range(num_reports))
+
+    end_time = time.time()
+
+    print(f"Finished generating {num_reports} reports in {end_time - start_time:.2f} seconds")
 
     with open('sample_data2.json', mode="wt") as out:
         json.dump(reports, out, indent=2)

@@ -22,14 +22,20 @@ authenticator = stauth.Authenticate(
     config['cookie']['expiry_days']
 )
 
-# Display the login form
-name, authentication_status, username = authenticator.login('Login', 'main')
+authentication_status = st.session_state.get("authentication_status")
 
 if authentication_status:
-    authenticator.logout('Logout', 'main')
+    authenticator.logout()
     app_content.display_app_content()
-
 elif authentication_status == False:
     st.error('Username/password is incorrect')
-elif authentication_status == None:
+else:
     st.warning('Please enter your username and password')
+    try:
+        # Display the login form
+        authenticator.login()
+        name = st.session_state.get("name")
+        authentication_status = st.session_state.get("authentication_status")
+        username = st.session_state.get("username")
+    except Exception as e:
+        st.error(e)

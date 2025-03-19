@@ -11,4 +11,4 @@ Faker
 plotly
 streamlit-extras
 altair
-streamlit-authenticator==0.2.1
+streamlit-authenticator

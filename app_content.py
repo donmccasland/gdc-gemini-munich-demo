@@ -23,6 +23,19 @@ import plotly.graph_objects as go
 from fraud_report import FraudReportGenerator, FraudReport
 from report_service import get_report_service
 
+
+REPORT_LINK_TEMPLATE = '<a href="?report_id={report_id}" target="_self" rel="noopener noreferrer">{link_text}</a>'
+
+def replace_report_ids_with_links(text: str) -> str:
+    """
+    Gets all available report IDs from report service and replaces them with <a> links.
+    """
+    report_service = get_report_service()
+    all_report_ids = report_service.get_report_ids()
+    for report_id in all_report_ids:
+        text = text.replace(report_id, REPORT_LINK_TEMPLATE.format(report_id=report_id, link_text=report_id))
+    return text
+
 def initialize_gemini():
     """Initializes the Gemini Pro model."""
     if 'GOOGLE_API_KEY' not in os.environ:
@@ -188,8 +201,8 @@ def display_app_content():
         df = pd.DataFrame(report_data)
 
         # Convert "View Report" column to clickable links
-        def make_clickable_link(report_id):
-            return f'<a href="?report_id={report_id}" target="_self">View Report</a>'
+        def make_clickable_link(report_id) -> str:
+            return REPORT_LINK_TEMPLATE.format(report_id=report_id, link_text="View Report")
 
         df["View Report"] = df["View Report"].apply(make_clickable_link)
 
@@ -291,7 +304,7 @@ def display_app_content():
             # Display chat history
             for message in st.session_state.messages:
                 with st.chat_message(message["role"]):
-                    st.markdown(message["content"])
+                    st.markdown(message["content"], unsafe_allow_html=True)
 
         if prompt:
             with messages_container:
@@ -340,7 +353,10 @@ def display_app_content():
                     for chunk in stream:
                         full_response += chunk.content
                         message_placeholder.markdown(full_response + "▌")
-                    message_placeholder.markdown(full_response)
+
+                    # Replacing report IDs with links
+                    full_response = replace_report_ids_with_links(full_response)
+                    message_placeholder.markdown(full_response, unsafe_allow_html=True)
 
                 # Add to chat history
                 st.session_state.messages.append({"role": "user", "content": prompt})

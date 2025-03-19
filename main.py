@@ -27,7 +27,7 @@ authentication_status = st.session_state.get("authentication_status")
 if authentication_status:
     authenticator.logout()
     app_content.display_app_content()
-elif authentication_status == False:
+elif authentication_status is False:
     st.error('Username/password is incorrect')
 else:
     st.warning('Please enter your username and password')

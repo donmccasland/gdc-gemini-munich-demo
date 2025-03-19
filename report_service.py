@@ -63,6 +63,9 @@ class ReportService:
         self.reports.append(new_report)
         self.reports.sort(key=lambda x: x.report_date, reverse=True)
 
+    def get_report_ids(self) -> set[str]:
+        return {report.report_id for report in self.reports}
+
 
 
 

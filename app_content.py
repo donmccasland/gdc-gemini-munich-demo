@@ -373,6 +373,6 @@ def display_app_content():
             report_service.generate_new_report()
             with col1_container.container():
                 report_selection_page()
-                await asyncio.sleep(10)
+                await asyncio.sleep(60)
 
     asyncio.run(test_ticker(col1))

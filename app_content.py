@@ -370,6 +370,8 @@ def display_app_content():
 
     async def test_ticker(col):
         while page_name == "report_selection":
+            if len(report_service.reports) >= 500:
+                return
             report_service.generate_new_report()
             with col1_container.container():
                 report_selection_page()

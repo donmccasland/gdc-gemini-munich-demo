@@ -28,7 +28,7 @@ def create_login_config(username, name, email, password, cookie_name):
             }
         },
         "cookie": {
-            "expiry_days": 0,
+            "expiry_days": 1,
             "key": cookie_key,
             "name": cookie_name
         },

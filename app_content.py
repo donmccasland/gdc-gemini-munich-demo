@@ -353,7 +353,7 @@ def display_app_content():
                     st.rerun()
 
     async def test_ticker(col):
-        while True:
+        while page_name == "report_selection":
             report_service.generate_new_report()
             with col1_container.container():
                 report_selection_page()

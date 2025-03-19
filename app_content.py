@@ -26,6 +26,10 @@ from report_service import get_report_service
 
 REPORT_LINK_TEMPLATE = '<a href="?report_id={report_id}" target="_self" rel="noopener noreferrer">{link_text}</a>'
 
+# Configurable heights for allowing scrolling
+MESSAGE_HISTORY_SIZE = 750
+TABLE_HEIGHT = 959
+
 def replace_report_ids_with_links(text: str) -> str:
     """
     Gets all available report IDs from report service and replaces them with <a> links.
@@ -206,12 +210,13 @@ def display_app_content():
 
         df["View Report"] = df["View Report"].apply(make_clickable_link)
 
-        # Display the DataFrame with links (escape=False needed for HTML)
-        st.markdown(
-            df[["Report ID", "Report Date", "Prepared By", "Period Start", "Period End", "View Report"]].to_html(
-                escape=False, index=False),
-            unsafe_allow_html=True,
-        )
+        with st.container(height=TABLE_HEIGHT):
+            # Display the DataFrame with links (escape=False needed for HTML)
+            st.markdown(
+                df[["Report ID", "Report Date", "Prepared By", "Period Start", "Period End", "View Report"]].to_html(
+                    escape=False, index=False),
+                unsafe_allow_html=True,
+            )
 
         # Get report id from query param
         if st.query_params.get("report_id"):
@@ -298,7 +303,7 @@ def display_app_content():
 
         st.markdown("---")  # Add a horizontal rule for visual separation
 
-        messages_container = st.container(height=500)
+        messages_container = st.container(height=MESSAGE_HISTORY_SIZE)
 
         with messages_container:
             # Display chat history

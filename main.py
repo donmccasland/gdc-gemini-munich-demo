@@ -9,6 +9,44 @@ import app_content  # Import the new module
 # st.set_page_config has to be the very first st command called
 st.set_page_config(layout="wide")
 
+st.markdown("""
+<style>        
+    /* Remove streamlit headers and footers */
+    div[data-testid="stToolbar"] {
+        visibility: hidden;
+        height: 0%;
+        position: fixed;
+    }
+                
+    div[data-testid="stDecoration"] {
+        visibility: hidden;
+        height: 0%;
+        position: fixed;
+    }
+                
+    div[data-testid="stStatusWidget"] {
+        visibility: hidden;
+        height: 0%;
+        position: fixed;
+    }
+                
+    #MainMenu {
+        visibility: hidden;
+        height: 0%;
+    }
+                
+    header {
+        visibility: hidden;
+        height: 0%;
+    }
+                
+    footer {
+        visibility: hidden;
+        height: 0%;
+    }
+</style>
+""", unsafe_allow_html=True)
+
 # Login page
 # Load the config file
 with open('login.yaml') as file:

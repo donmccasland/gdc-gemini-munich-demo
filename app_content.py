@@ -69,7 +69,7 @@ def display_app_content():
 
     report_service = get_report_service()
     report_generator = FraudReportGenerator()
-
+    st.title("Fraud Analysis Assistant")
     col1, col2 = st.columns([0.7, 0.3], border=True)
     dashboard_container = None
 
@@ -197,8 +197,6 @@ def display_app_content():
 
     # Sidebar Chat
     with col2:
-        st.title("Fraud Analysis Assistant")
-
         # Predefined questions
         predefined_questions = {
             "report_view": [

@@ -63,66 +63,9 @@ def display_app_content():
 
     st.markdown("""
     <style>
-
-    @import url('https://fonts.googleapis.com/css2?family=Google+Sans+Flex');
-
-    body, * {
-        font-family: 'Google Sans Flex', Arial, sans-serif !important;
-    }
-
-    table {
-        width: 100%;
-    }
-
-    .fullHeight {height : 80vh; width : 100%}
-
-    [data-testid="block-container"] {
-        padding-left: 2rem;
-        padding-right: 2rem;
-        padding-top: 1rem;
-        padding-bottom: 0rem;
-        border-radius: 30px;
-        margin-bottom: -7rem;
-    }
-
-    [data-testid="stVerticalBlock"] {
-        padding-left: 0rem;
-        padding-right: 0rem;
-        border-radius: 30px;
-    }
-
-    [data-testid="stMetric"] {
-        background-color: #393939;
-        text-align: center;
-        padding: 15px 0;
-        border-radius: 30px;
-        height: 150px;
-    }
-
-    [data-testid="stMetricLabel"] {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-
-    [data-testid="stMetricDeltaIcon-Up"] {
-        position: relative;
-        left: 38%;
-        -webkit-transform: translateX(-50%);
-        -ms-transform: translateX(-50%);
-        transform: translateX(-50%);
-    }
-
-    [data-testid="stMetricDeltaIcon-Down"] {
-        position: relative;
-        left: 38%;
-        -webkit-transform: translateX(-50%);
-        -ms-transform: translateX(-50%);
-        transform: translateX(-50%);
-    }
-
+    {css}
     </style>
-    """, unsafe_allow_html=True)
+    """.format(css=open("style.css").read()), unsafe_allow_html=True)
 
     report_service = get_report_service()
     report_generator = FraudReportGenerator()

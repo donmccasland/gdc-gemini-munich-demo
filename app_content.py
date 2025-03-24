@@ -127,7 +127,7 @@ def display_app_content():
     report_service = get_report_service()
     report_generator = FraudReportGenerator()
 
-    col1, col2 = st.columns([0.8, 0.2], border=True)
+    col1, col2 = st.columns([0.7, 0.3], border=True)
     dashboard_container = None
 
     if "page" not in st.session_state:

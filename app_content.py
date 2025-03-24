@@ -216,34 +216,6 @@ def display_app_content():
         if "selected_question" not in st.session_state:
             st.session_state.selected_question = ""
 
-        # Dropdown for predefined questions
-        selected_question = st.selectbox(
-            "Choose a question:",
-            ["", "Custom Question"] + predefined_questions[page_name],
-            key="selectbox",
-            index=0
-        )
-
-        if selected_question and selected_question != st.session_state.selected_question:
-            st.session_state.selected_question = selected_question
-            if selected_question == "Custom Question":
-                # Only set the prompt to empty and let the chat input handle it
-                st.session_state.prompt = ""
-                st.rerun()
-            else:
-                st.session_state.prompt = selected_question
-                st.rerun()
-
-        # Handle custom question input separately
-        if selected_question == "Custom Question":
-            custom_question = st.chat_input("Ask a question", key="custom_question_input")
-            if custom_question:
-                st.session_state.prompt = custom_question
-
-        prompt = st.session_state.prompt
-
-        st.markdown("---")  # Add a horizontal rule for visual separation
-
         messages_container = st.container(height=MESSAGE_HISTORY_SIZE)
 
         with messages_container:
@@ -251,6 +223,8 @@ def display_app_content():
             for message in st.session_state.messages:
                 with st.chat_message(message["role"]):
                     st.markdown(message["content"], unsafe_allow_html=True)
+
+        prompt = st.session_state.prompt
 
         if prompt:
             with messages_container:
@@ -313,6 +287,32 @@ def display_app_content():
                     # Clear the prompt after processing
                     st.session_state.prompt = ""
                     st.rerun()
+
+        st.markdown("---")  # Add a horizontal rule for visual separation
+        
+        # Dropdown for predefined questions
+        selected_question = st.selectbox(
+            "Choose a question:",
+            ["", "Custom Question"] + predefined_questions[page_name],
+            key="selectbox",
+            index=0
+        )
+
+        if selected_question and selected_question != st.session_state.selected_question:
+            st.session_state.selected_question = selected_question
+            if selected_question == "Custom Question":
+                # Only set the prompt to empty and let the chat input handle it
+                st.session_state.prompt = ""
+                st.rerun()
+            else:
+                st.session_state.prompt = selected_question
+                st.rerun()
+
+        # Handle custom question input separately
+        if selected_question == "Custom Question":
+            custom_question = st.chat_input("Ask a question", key="custom_question_input")
+            if custom_question:
+                st.session_state.prompt = custom_question
 
     async def test_ticker(col):
         while page_name == "report_selection":

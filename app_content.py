@@ -202,12 +202,10 @@ def display_app_content():
             "report_view": [
                 "What are the key trends identified in the transactions?",
                 "What are the main risk factors mentioned?",
-                "What actions were taken in response to the fraud?",
-                "What recommendations are made for future actions?",
-                "Can you summarise the executive summary?",
             ],
             "report_selection": [
-                "Any common patterns in all reports in this list?"
+                "Any common patterns in all reports in this list?",
+                "What is the date range of the reports?",
             ]
         }
 
@@ -225,12 +223,29 @@ def display_app_content():
                     st.markdown(message["content"], unsafe_allow_html=True)
 
         st.markdown("---")  # Add a horizontal rule for visual separation
-        
-        # Chat logic
+
+        # Predefined questions buttons
+        if page_name in predefined_questions:
+            predefined_questions_to_display = predefined_questions[page_name]  
+            cols = st.columns(len(predefined_questions_to_display))
+
+            for i, question in enumerate(predefined_questions_to_display):
+                with cols[i]:
+                    if st.button(question, key=f"predefined_{question}", help=question, type="secondary", use_container_width=True):
+                        st.session_state.prompt = question
+                        st.rerun()
+
+        # Custom question asked
         custom_question = st.chat_input("Ask a question", key="custom_question_input")
         if custom_question:
             st.session_state.prompt = custom_question
-            st.rerun() # Rerun to process the prompt immediately
+            st.rerun()  
+
+        # Handle predefined question selection
+        if st.session_state.selected_question:
+            st.session_state.prompt = st.session_state.selected_question
+            st.session_state.selected_question = ""
+            st.rerun()
 
         prompt = st.session_state.prompt
 
@@ -294,7 +309,7 @@ def display_app_content():
                     st.session_state.messages.append({"role": "assistant", "content": full_response})
                     # Clear the prompt after processing
                     st.session_state.prompt = ""
-                    st.rerun()     
+                    st.rerun()
 
     async def test_ticker(col):
         while page_name == "report_selection":

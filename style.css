@@ -12,6 +12,16 @@ th {
     text-align: left !important;
 }
 
+.st-key-init {
+    height: 0;
+}
+
+.st-key-Logout {
+    width: 150px;
+    position: absolute;
+    right: 0;
+}
+
 .fullHeight {height : 80vh; width : 100%}
 
 [data-testid="block-container"] {

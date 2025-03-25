@@ -20,7 +20,7 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 import pandas as pd
 import plotly.graph_objects as go
 
-from fraud_report import FraudReportGenerator, FraudReport
+from fraud_report import FraudReportGenerator, FraudReport, FraudReportStatus
 from report_service import get_report_service
 
 
@@ -119,6 +119,22 @@ def display_app_content():
         with col4:
             st.metric("24h Transactions", stats["total_transactions"])
 
+    def convert_stage_label(label):
+        """
+        Converts the stage label to a user-friendly format, handling the prefix.
+        """
+        if isinstance(label, str):
+            if label.startswith("FraudReportStatus."):
+                label = label.split(".", 1)[1]  # Remove the prefix
+            if label == "alert_review":
+                return "Alert Review"
+            elif label == "case_review":
+                return "Case Review"
+            elif label == "conclusion":
+                return "Conclusion"
+            else:
+                return label
+            
     def report_selection_page():
         all_reports = report_service.get_all_reports()
         if not all_reports:
@@ -142,6 +158,7 @@ def display_app_content():
                 "Prepared By": report.prepared_by,
                 "Period Start": report.reporting_period_start,
                 "Period End": report.reporting_period_end,
+                "Current Stage": convert_stage_label(report.stage),
                 "View Report": report.report_id
             })
 
@@ -156,7 +173,7 @@ def display_app_content():
         with st.container(height=TABLE_HEIGHT):
             # Display the DataFrame with links (escape=False needed for HTML)
             st.markdown(
-                df[["Report ID", "Report Date", "Prepared By", "Period Start", "Period End", "View Report"]].to_html(
+                df[["Report ID", "Report Date", "Prepared By", "Period Start", "Period End", "Current Stage", "View Report"]].to_html(
                     escape=False, index=False),
                 unsafe_allow_html=True,
             )

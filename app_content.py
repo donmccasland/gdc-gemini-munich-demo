@@ -258,11 +258,11 @@ def display_app_content(authenticator):
 
         messages_container = st.container(height=MESSAGE_HISTORY_SIZE)
 
-        with messages_container:
-            # Display chat history
-            for message in st.session_state.messages:
-                with st.chat_message(message["role"]):
-                    st.markdown(message["content"], unsafe_allow_html=True)
+        # with messages_container:
+        #     # Display chat history
+        #     for message in st.session_state.messages:
+        #         with st.chat_message(message["role"]):
+        #             st.markdown(message["content"], unsafe_allow_html=True)
 
         # st.markdown("---")  # Add a horizontal rule for visual separation
 
@@ -278,57 +278,63 @@ def display_app_content(authenticator):
 
         if prompt:
             with messages_container:
+                with st.chat_message("assistant"):
+                    message_placeholder = st.empty()
+
                 # Display user message immediately
                 with st.chat_message("user"):
                     st.markdown(prompt)
 
-                with st.chat_message("assistant"):
-                    message_placeholder = st.empty()
-                    full_response = ""
+                for message in reversed(st.session_state.messages):
+                    with st.chat_message(message["role"]):
+                        st.markdown(message["content"], unsafe_allow_html=True)
 
-                    chat_history = []
-                    for msg in st.session_state.messages:
-                        if msg["role"] == "user":
-                            chat_history.append(HumanMessage(content=msg["content"]))
-                        elif msg["role"] == "assistant":
-                            chat_history.append(AIMessage(content=msg["content"]))
 
-                    if st.session_state["page"] == "report_selection":
-                        attach_data = "\n".join(fr.model_dump_json() for fr in report_service.get_all_reports())
-                        data_desc = "Here is the data of all available fraud reports: "
-                    elif st.session_state["page"] == "report_view":
-                        attach_data = json.dumps(st.session_state["selected_report_data"].model_dump_json())
-                        data_desc = "Here is the data of currently inspected fraud report: "
+                full_response = ""
 
-                    full_prompt = f"""
-                        {data_desc}
-                        {attach_data}
+                chat_history = []
+                for msg in st.session_state.messages:
+                    if msg["role"] == "user":
+                        chat_history.append(HumanMessage(content=msg["content"]))
+                    elif msg["role"] == "assistant":
+                        chat_history.append(AIMessage(content=msg["content"]))
 
-                        The data may have been updated since the last message in the conversation, so please make 
-                        sure you check you answers - if it's still applicable.
-                        
-                        Current number of reports is: {len(report_service.get_all_reports())}
+                if st.session_state["page"] == "report_selection":
+                    attach_data = "\n".join(fr.model_dump_json() for fr in report_service.get_all_reports())
+                    data_desc = "Here is the data of all available fraud reports: "
+                elif st.session_state["page"] == "report_view":
+                    attach_data = json.dumps(st.session_state["selected_report_data"].model_dump_json())
+                    data_desc = "Here is the data of currently inspected fraud report: "
 
-                        User Query: {prompt}
-                        """
+                full_prompt = f"""
+                    {data_desc}
+                    {attach_data}
 
-                    # Stream the response from Gemini
-                    try:
-                        stream = llm.stream(
-                            chat_history + [HumanMessage(content=full_prompt)],
-                            config=RunnableConfig(callbacks=None),
-                        )
-                    except Exception as e:
-                        st.error(f"Error generating response: {e}")
-                        st.stop()
+                    The data may have been updated since the last message in the conversation, so please make 
+                    sure you check you answers - if it's still applicable.
+                    
+                    Current number of reports is: {len(report_service.get_all_reports())}
 
-                    for chunk in stream:
-                        full_response += chunk.content
-                        message_placeholder.markdown(full_response + "▌")
+                    User Query: {prompt}
+                    """
 
-                    # Replacing report IDs with links
-                    full_response = replace_report_ids_with_links(full_response)
-                    message_placeholder.markdown(full_response, unsafe_allow_html=True)
+                # Stream the response from Gemini
+                try:
+                    stream = llm.stream(
+                        chat_history + [HumanMessage(content=full_prompt)],
+                        config=RunnableConfig(callbacks=None),
+                    )
+                except Exception as e:
+                    st.error(f"Error generating response: {e}")
+                    st.stop()
+
+                for chunk in stream:
+                    full_response += chunk.content
+                    message_placeholder.markdown(full_response + "▌")
+
+                # Replacing report IDs with links
+                full_response = replace_report_ids_with_links(full_response)
+                message_placeholder.markdown(full_response, unsafe_allow_html=True)
 
                 # Add to chat history
                 st.session_state.messages.append({"role": "user", "content": prompt})
@@ -339,6 +345,11 @@ def display_app_content(authenticator):
                     # Clear the prompt after processing
                     st.session_state.prompt = ""
                     st.rerun()
+        else:
+            with messages_container:
+                for message in reversed(st.session_state.messages):
+                    with st.chat_message(message["role"]):
+                        st.markdown(message["content"], unsafe_allow_html=True)
 
     async def test_ticker(col):
         while page_name == "report_selection":

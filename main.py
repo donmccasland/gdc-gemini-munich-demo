@@ -63,7 +63,7 @@ authenticator = stauth.Authenticate(
 authentication_status = st.session_state.get("authentication_status")
 
 if authentication_status:
-    app_content.display_app_content()
+    app_content.display_app_content(authenticator)
 elif authentication_status is False:
     st.error('Username/password is incorrect')
 else:

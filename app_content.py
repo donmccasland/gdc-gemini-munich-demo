@@ -57,7 +57,7 @@ def initialize_gemini():
         st.error(f"Error initializing Gemini Pro: {e}")
         st.stop()
 
-def display_app_content():
+def display_app_content(authenticator):
     """Displays the main content of the app (report/chat view)."""
     llm, genai_client = initialize_gemini()
 
@@ -69,7 +69,14 @@ def display_app_content():
 
     report_service = get_report_service()
     report_generator = FraudReportGenerator()
-    st.title("Fraud Analysis Assistant")
+    col1, col2 = st.columns([0.7, 0.3], border=False)
+
+    with col1:
+        st.title("Fraud Analysis Assistant")
+
+    with col2:
+        authenticator.logout()
+
     col1, col2 = st.columns([0.7, 0.3], border=True)
     dashboard_container = None
 

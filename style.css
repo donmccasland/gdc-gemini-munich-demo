@@ -22,6 +22,10 @@ th {
     right: 0;
 }
 
+.stMainBlockContainer {
+    padding-top: 0 !important;
+}
+
 .fullHeight {height : 80vh; width : 100%}
 
 [data-testid="block-container"] {

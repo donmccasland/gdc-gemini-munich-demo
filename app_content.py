@@ -238,6 +238,24 @@ def display_app_content(authenticator):
         if "selected_question" not in st.session_state:
             st.session_state.selected_question = ""
 
+        # Predefined questions buttons
+        if page_name in predefined_questions:
+            predefined_questions_to_display = predefined_questions[page_name]
+            cols = st.columns(len(predefined_questions_to_display))
+
+            for i, question in enumerate(predefined_questions_to_display):
+                with cols[i]:
+                    if st.button(question, key=f"predefined_{question}", help=question, type="secondary",
+                                 use_container_width=True):
+                        st.session_state.prompt = question
+                        st.rerun()
+
+            # Custom question asked
+        custom_question = st.chat_input("Ask a question", key="custom_question_input")
+        if custom_question:
+            st.session_state.prompt = custom_question
+            st.rerun()
+
         messages_container = st.container(height=MESSAGE_HISTORY_SIZE)
 
         with messages_container:
@@ -246,24 +264,9 @@ def display_app_content(authenticator):
                 with st.chat_message(message["role"]):
                     st.markdown(message["content"], unsafe_allow_html=True)
 
-        st.markdown("---")  # Add a horizontal rule for visual separation
+        # st.markdown("---")  # Add a horizontal rule for visual separation
 
-        # Predefined questions buttons
-        if page_name in predefined_questions:
-            predefined_questions_to_display = predefined_questions[page_name]  
-            cols = st.columns(len(predefined_questions_to_display))
 
-            for i, question in enumerate(predefined_questions_to_display):
-                with cols[i]:
-                    if st.button(question, key=f"predefined_{question}", help=question, type="secondary", use_container_width=True):
-                        st.session_state.prompt = question
-                        st.rerun()
-
-        # Custom question asked
-        custom_question = st.chat_input("Ask a question", key="custom_question_input")
-        if custom_question:
-            st.session_state.prompt = custom_question
-            st.rerun()  
 
         # Handle predefined question selection
         if st.session_state.selected_question:
@@ -301,8 +304,10 @@ def display_app_content(authenticator):
                         {data_desc}
                         {attach_data}
 
-                        The data may have been updated since the last messagein conversation, so please make sure you
-                        check you answers - if it's still applicable.
+                        The data may have been updated since the last message in the conversation, so please make 
+                        sure you check you answers - if it's still applicable.
+                        
+                        Current number of reports is: {len(report_service.get_all_reports())}
 
                         User Query: {prompt}
                         """

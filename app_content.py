@@ -258,16 +258,6 @@ def display_app_content(authenticator):
 
         messages_container = st.container(height=MESSAGE_HISTORY_SIZE)
 
-        # with messages_container:
-        #     # Display chat history
-        #     for message in st.session_state.messages:
-        #         with st.chat_message(message["role"]):
-        #             st.markdown(message["content"], unsafe_allow_html=True)
-
-        # st.markdown("---")  # Add a horizontal rule for visual separation
-
-
-
         # Handle predefined question selection
         if st.session_state.selected_question:
             st.session_state.prompt = st.session_state.selected_question

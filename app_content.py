@@ -351,6 +351,10 @@ def display_app_content(authenticator):
                     with st.chat_message(message["role"]):
                         st.markdown(message["content"], unsafe_allow_html=True)
 
+        if st.button("Reset reports backlog", help="Sets the number of reports in the system back to 50.", use_container_width=True):
+            report_service.reset_the_reports(50)
+            st.rerun()
+
     async def test_ticker(col):
         while page_name == "report_selection":
             if len(report_service.reports) >= 500:

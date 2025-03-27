@@ -66,6 +66,13 @@ class ReportService:
     def get_report_ids(self) -> set[str]:
         return {report.report_id for report in self.reports}
 
-
-
-
+    def reset_the_reports(self, reports_number: int=50) -> None:
+        """
+        Reduces the number of reports in the system down to reports_number.
+        Does nothing if reports_number >= current number of reports.
+        """
+        if reports_number >= len(self.reports):
+            return
+        self.reports = random.sample(self.reports, reports_number)
+        self.reports.sort(key=lambda x: x.report_date, reverse=True)
+        return

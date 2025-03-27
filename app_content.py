@@ -224,8 +224,8 @@ def display_app_content(authenticator):
         # Predefined questions
         predefined_questions = {
             "report_view": [
-                "What are the key trends identified in the transactions?",
-                "What are the main risk factors mentioned?",
+                "What are the key trends identified in this report?",
+                "What are the main risk factors mentioned in this report?",
             ],
             "report_selection": [
                 "Any common patterns in all reports in this list?",

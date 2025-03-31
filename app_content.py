@@ -314,6 +314,8 @@ def display_app_content(authenticator):
                     sure you check you answers - if it's still applicable.
                     
                     Current number of reports is: {len(report_service.get_all_reports())}
+                    
+                    Do not generate any HTML code.
 
                     User Query: {prompt}
                     """

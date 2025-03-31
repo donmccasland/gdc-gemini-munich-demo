@@ -10,6 +10,11 @@ table {
 
 th {
     text-align: left !important;
+    font-weight: bold;
+}
+
+h1 a {
+    display: none !important;
 }
 
 .st-key-init {

@@ -56,6 +56,136 @@ def initialize_gemini():
         st.error(f"Error initializing Gemini Pro: {e}")
         st.stop()
 
+class Chatbox:
+    def __init__(self, llm, report_service):
+        self.llm = llm
+        self.report_service = report_service
+        self.predefined_questions = {
+            "report_view": [
+                "What are the key trends identified in this report?",
+                "What are the main risk factors mentioned in this report?",
+            ],
+            "report_selection": [
+                "Any common patterns in all reports in this list?",
+                "What is the date range of the reports?",
+            ]
+        }
+
+    def render(self, page_name, selected_report_data):
+        if "prompt" not in st.session_state:
+            st.session_state.prompt = ""
+        if "selected_question" not in st.session_state:
+            st.session_state.selected_question = ""
+
+        # Predefined questions buttons
+        if page_name in self.predefined_questions:
+            predefined_questions_to_display = self.predefined_questions[page_name]
+            cols = st.columns(len(predefined_questions_to_display))
+
+            for i, question in enumerate(predefined_questions_to_display):
+                with cols[i]:
+                    if st.button(question, key=f"predefined_{question}", help=question, type="secondary",
+                                 use_container_width=True):
+                        st.session_state.prompt = question
+                        st.rerun()
+
+            # Custom question asked
+        custom_question = st.chat_input("Ask a question", key="custom_question_input")
+        if custom_question:
+            st.session_state.prompt = custom_question
+            st.rerun()
+
+        messages_container = st.container(height=MESSAGE_HISTORY_SIZE)
+
+        # Handle predefined question selection
+        if st.session_state.selected_question:
+            st.session_state.prompt = st.session_state.selected_question
+            st.session_state.selected_question = ""
+            st.rerun()
+
+        prompt = st.session_state.prompt
+
+        if prompt:
+            with messages_container:
+                with st.chat_message("assistant"):
+                    message_placeholder = st.empty()
+
+                # Display user message immediately
+                with st.chat_message("user"):
+                    st.markdown(prompt)
+
+                for message in reversed(st.session_state.messages):
+                    with st.chat_message(message["role"]):
+                        st.markdown(message["content"], unsafe_allow_html=True)
+
+
+                full_response = ""
+
+                chat_history = []
+                for msg in st.session_state.messages:
+                    if msg["role"] == "user":
+                        chat_history.append(HumanMessage(content=msg["content"]))
+                    elif msg["role"] == "assistant":
+                        chat_history.append(AIMessage(content=msg["content"]))
+
+                if page_name == "report_selection":
+                    attach_data = "\n".join(fr.model_dump_json() for fr in self.report_service.get_all_reports())
+                    data_desc = "Here is the data of all available fraud reports: "
+                elif page_name == "report_view":
+                    attach_data = json.dumps(selected_report_data.model_dump_json())
+                    data_desc = "Here is the data of currently inspected fraud report: "
+
+                full_prompt = f"""
+                    {data_desc}
+                    {attach_data}
+
+                    The data may have been updated since the last message in the conversation, so please make 
+                    sure you check you answers - if it's still applicable.
+                    
+                    Current number of reports is: {len(self.report_service.get_all_reports())}
+                    
+                    Do not generate any HTML code.
+
+                    User Query: {prompt}
+                    """
+
+                # Stream the response from Gemini
+                try:
+                    stream = self.llm.stream(
+                        chat_history + [HumanMessage(content=full_prompt)],
+                        config=RunnableConfig(callbacks=None),
+                    )
+                except Exception as e:
+                    st.error(f"Error generating response: {e}")
+                    st.stop()
+
+                for chunk in stream:
+                    full_response += chunk.content
+                    message_placeholder.markdown(full_response + "▌")
+
+                # Replacing report IDs with links
+                full_response = replace_report_ids_with_links(full_response)
+                message_placeholder.markdown(full_response, unsafe_allow_html=True)
+
+                # Add to chat history
+                st.session_state.messages.append({"role": "user", "content": prompt})
+
+                # Only add the bot response if it exists
+                if full_response:
+                    st.session_state.messages.append({"role": "assistant", "content": full_response})
+                    # Clear the prompt after processing
+                    st.session_state.prompt = ""
+                    st.rerun()
+        else:
+            with messages_container:
+                for message in reversed(st.session_state.messages):
+                    with st.chat_message(message["role"]):
+                        st.markdown(message["content"], unsafe_allow_html=True)
+
+        if st.button("Reset reports backlog", help="Sets the number of reports in the system back to 50.", use_container_width=True):
+            self.report_service.reset_the_reports(50)
+            st.rerun()
+
 def display_app_content(authenticator):
     """Displays the main content of the app (report/chat view)."""
     llm, genai_client = initialize_gemini()
@@ -220,130 +350,5 @@ def display_app_content(authenticator):
 
     # Sidebar Chat
     with col2:
-        # Predefined questions
-        predefined_questions = {
-            "report_view": [
-                "What are the key trends identified in this report?",
-                "What are the main risk factors mentioned in this report?",
-            ],
-            "report_selection": [
-                "Any common patterns in all reports in this list?",
-                "What is the date range of the reports?",
-            ]
-        }
-
-        if "prompt" not in st.session_state:
-            st.session_state.prompt = ""
-        if "selected_question" not in st.session_state:
-            st.session_state.selected_question = ""
-
-        # Predefined questions buttons
-        if page_name in predefined_questions:
-            predefined_questions_to_display = predefined_questions[page_name]
-            cols = st.columns(len(predefined_questions_to_display))
-
-            for i, question in enumerate(predefined_questions_to_display):
-                with cols[i]:
-                    if st.button(question, key=f"predefined_{question}", help=question, type="secondary",
-                                 use_container_width=True):
-                        st.session_state.prompt = question
-                        st.rerun()
-
-            # Custom question asked
-        custom_question = st.chat_input("Ask a question", key="custom_question_input")
-        if custom_question:
-            st.session_state.prompt = custom_question
-            st.rerun()
-
-        messages_container = st.container(height=MESSAGE_HISTORY_SIZE)
-
-        # Handle predefined question selection
-        if st.session_state.selected_question:
-            st.session_state.prompt = st.session_state.selected_question
-            st.session_state.selected_question = ""
-            st.rerun()
-
-        prompt = st.session_state.prompt
-
-        if prompt:
-            with messages_container:
-                with st.chat_message("assistant"):
-                    message_placeholder = st.empty()
-
-                # Display user message immediately
-                with st.chat_message("user"):
-                    st.markdown(prompt)
-
-                for message in reversed(st.session_state.messages):
-                    with st.chat_message(message["role"]):
-                        st.markdown(message["content"], unsafe_allow_html=True)
-
-
-                full_response = ""
-
-                chat_history = []
-                for msg in st.session_state.messages:
-                    if msg["role"] == "user":
-                        chat_history.append(HumanMessage(content=msg["content"]))
-                    elif msg["role"] == "assistant":
-                        chat_history.append(AIMessage(content=msg["content"]))
-
-                if st.session_state["page"] == "report_selection":
-                    attach_data = "\n".join(fr.model_dump_json() for fr in report_service.get_all_reports())
-                    data_desc = "Here is the data of all available fraud reports: "
-                elif st.session_state["page"] == "report_view":
-                    attach_data = json.dumps(st.session_state["selected_report_data"].model_dump_json())
-                    data_desc = "Here is the data of currently inspected fraud report: "
-
-                full_prompt = f"""
-                    {data_desc}
-                    {attach_data}
-
-                    The data may have been updated since the last message in the conversation, so please make 
-                    sure you check you answers - if it's still applicable.
-                    
-                    Current number of reports is: {len(report_service.get_all_reports())}
-                    
-                    Do not generate any HTML code.
-
-                    User Query: {prompt}
-                    """
-
-                # Stream the response from Gemini
-                try:
-                    stream = llm.stream(
-                        chat_history + [HumanMessage(content=full_prompt)],
-                        config=RunnableConfig(callbacks=None),
-                    )
-                except Exception as e:
-                    st.error(f"Error generating response: {e}")
-                    st.stop()
-
-                for chunk in stream:
-                    full_response += chunk.content
-                    message_placeholder.markdown(full_response + "▌")
-
-                # Replacing report IDs with links
-                full_response = replace_report_ids_with_links(full_response)
-                message_placeholder.markdown(full_response, unsafe_allow_html=True)
-
-                # Add to chat history
-                st.session_state.messages.append({"role": "user", "content": prompt})
-
-                # Only add the bot response if it exists
-                if full_response:
-                    st.session_state.messages.append({"role": "assistant", "content": full_response})
-                    # Clear the prompt after processing
-                    st.session_state.prompt = ""
-                    st.rerun()
-        else:
-            with messages_container:
-                for message in reversed(st.session_state.messages):
-                    with st.chat_message(message["role"]):
-                        st.markdown(message["content"], unsafe_allow_html=True)
-
-        if st.button("Reset reports backlog", help="Sets the number of reports in the system back to 50.", use_container_width=True):
-            report_service.reset_the_reports(50)
-            st.rerun()
-
-
+        chatbox = Chatbox(llm, report_service)
+        chatbox.render(page_name, st.session_state["selected_report_data"])

@@ -189,6 +189,7 @@ class Chatbox:
 
         if st.button("Reset reports backlog", help="Sets the number of reports in the system back to 50.", use_container_width=True):
             self.report_service.reset_the_reports(50)
+            CHAT_HISTORY.clear()
             st.rerun()
 
 def display_app_content(authenticator):
@@ -212,7 +213,6 @@ def display_app_content(authenticator):
         authenticator.logout()
 
     col1, col2 = st.columns([0.7, 0.3], border=True)
-    dashboard_container = None
 
     if "page" not in st.session_state:
         st.session_state["page"] = "report_selection"

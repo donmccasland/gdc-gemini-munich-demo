@@ -222,7 +222,7 @@ class ReportTable:
 
         with st.container(height=self.table_height):
             cols = st.columns(7)  
-            headers = ["Report ID", "Report Date", "Prepared By", "Period Start", "Period End", "Current Stage", "View Report"]
+            headers = ["Report ID", "Report Date", "Prepared By", "Period Start", "Period End", "Current Stage", "Open Report"]
             for i, header in enumerate(headers):
                 cols[i].write(f"**{header}**")
 
@@ -234,7 +234,7 @@ class ReportTable:
                 col4.write(report.reporting_period_start)
                 col5.write(report.reporting_period_end)
                 col6.write(self.convert_stage_label(report.stage))
-                if col7.button(f"View", key=f"view_{report.report_id}"):
+                if col7.button(f"Open", key=f"view_{report.report_id}"):
                     st.session_state["selected_report_data"] = report
                     st.session_state["page"] = "report_view"
                     st.rerun()

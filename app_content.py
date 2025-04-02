@@ -192,6 +192,59 @@ class Chatbox:
             CHAT_HISTORY.clear()
             st.rerun()
 
+class ReportTable:
+    def __init__(self, report_service):
+        self.report_service = report_service
+        self.table_height = TABLE_HEIGHT
+        self.report_link_template = REPORT_LINK_TEMPLATE
+
+    def convert_stage_label(self, label):
+        """
+        Converts the stage label to a user-friendly format, handling the prefix.
+        """
+        if isinstance(label, str):
+            if label.startswith("FraudReportStatus."):
+                label = label.split(".", 1)[1]  # Remove the prefix
+            if label == "alert_review":
+                return "Alert Review"
+            elif label == "case_review":
+                return "Case Review"
+            elif label == "conclusion":
+                return "Conclusion"
+            else:
+                return label
+
+    def make_clickable_link(self, report_id) -> str:
+        return self.report_link_template.format(report_id=report_id, link_text="View Report")
+
+    def render(self):
+        all_reports = self.report_service.get_all_reports()
+        if not all_reports:
+            st.write("No reports found.")
+            return
+
+        report_data = []
+        for report in all_reports:
+            report_data.append({
+                "Report ID": report.report_id,
+                "Report Date": report.report_date,
+                "Prepared By": report.prepared_by,
+                "Period Start": report.reporting_period_start,
+                "Period End": report.reporting_period_end,
+                "Current Stage": self.convert_stage_label(report.stage),
+                "View Report": report.report_id
+            })
+
+        df = pd.DataFrame(report_data)
+        df["View Report"] = df["View Report"].apply(self.make_clickable_link)
+
+        with st.container(height=self.table_height):
+            st.markdown(
+                df[["Report ID", "Report Date", "Prepared By", "Period Start", "Period End", "Current Stage", "View Report"]].to_html(
+                    escape=False, index=False),
+                unsafe_allow_html=True,
+            )
+
 def display_app_content(authenticator):
     """Displays the main content of the app (report/chat view)."""
     llm, genai_client = initialize_gemini()
@@ -260,22 +313,6 @@ def display_app_content(authenticator):
 
         with col4:
             st.metric("24h Transactions", stats["total_transactions"])
-
-    def convert_stage_label(label):
-        """
-        Converts the stage label to a user-friendly format, handling the prefix.
-        """
-        if isinstance(label, str):
-            if label.startswith("FraudReportStatus."):
-                label = label.split(".", 1)[1]  # Remove the prefix
-            if label == "alert_review":
-                return "Alert Review"
-            elif label == "case_review":
-                return "Case Review"
-            elif label == "conclusion":
-                return "Conclusion"
-            else:
-                return label
             
     def report_selection_page():
         all_reports = report_service.get_all_reports()
@@ -292,33 +329,8 @@ def display_app_content(authenticator):
         with dashboard_container.container():
             display_dashboard(stats)
 
-        report_data = []
-        for report in all_reports:
-            report_data.append({
-                "Report ID": report.report_id,
-                "Report Date": report.report_date,
-                "Prepared By": report.prepared_by,
-                "Period Start": report.reporting_period_start,
-                "Period End": report.reporting_period_end,
-                "Current Stage": convert_stage_label(report.stage),
-                "View Report": report.report_id
-            })
-
-        df = pd.DataFrame(report_data)
-
-        # Convert "View Report" column to clickable links
-        def make_clickable_link(report_id) -> str:
-            return REPORT_LINK_TEMPLATE.format(report_id=report_id, link_text="View Report")
-
-        df["View Report"] = df["View Report"].apply(make_clickable_link)
-
-        with st.container(height=TABLE_HEIGHT):
-            # Display the DataFrame with links (escape=False needed for HTML)
-            st.markdown(
-                df[["Report ID", "Report Date", "Prepared By", "Period Start", "Period End", "Current Stage", "View Report"]].to_html(
-                    escape=False, index=False),
-                unsafe_allow_html=True,
-            )
+        table = ReportTable(report_service)
+        table.render()
 
         # Get report id from query param
         if st.query_params.get("report_id"):

@@ -213,7 +213,7 @@ class ReportTable:
                 return "Conclusion"
             else:
                 return label
-
+    
     def make_clickable_link(self, report_id) -> str:
         return self.report_link_template.format(report_id=report_id, link_text="View Report")
 
@@ -223,27 +223,22 @@ class ReportTable:
             st.write("No reports found.")
             return
 
-        report_data = []
-        for report in all_reports:
-            report_data.append({
-                "Report ID": report.report_id,
-                "Report Date": report.report_date,
-                "Prepared By": report.prepared_by,
-                "Period Start": report.reporting_period_start,
-                "Period End": report.reporting_period_end,
-                "Current Stage": self.convert_stage_label(report.stage),
-                "View Report": report.report_id
-            })
-
-        df = pd.DataFrame(report_data)
-        df["View Report"] = df["View Report"].apply(self.make_clickable_link)
-
         with st.container(height=self.table_height):
-            st.markdown(
-                df[["Report ID", "Report Date", "Prepared By", "Period Start", "Period End", "Current Stage", "View Report"]].to_html(
-                    escape=False, index=False),
-                unsafe_allow_html=True,
-            )
+            cols = st.columns(7)  
+            headers = ["Report ID", "Report Date", "Prepared By", "Period Start", "Period End", "Current Stage", "View Report"]
+            for i, header in enumerate(headers):
+                cols[i].write(f"**{header}**")
+
+            for report in all_reports:
+                col1, col2, col3, col4, col5, col6, col7 = st.columns(7)
+                col1.write(report.report_id)
+                col2.write(report.report_date)
+                col3.write(report.prepared_by)
+                col4.write(report.reporting_period_start)
+                col5.write(report.reporting_period_end)
+                col6.write(self.convert_stage_label(report.stage))
+                col7.markdown(self.make_clickable_link(report.report_id), unsafe_allow_html=True)
+                
 
 def display_app_content(authenticator):
     """Displays the main content of the app (report/chat view)."""

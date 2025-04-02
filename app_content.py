@@ -26,9 +26,6 @@ from report_service import get_report_service
 
 REPORT_LINK_TEMPLATE = '<a href="?report_id={report_id}" target="_self" rel="noopener noreferrer">{link_text}</a>'
 
-# Global variable to store chat history
-CHAT_HISTORY = []
-
 # Configurable heights for allowing scrolling
 MESSAGE_HISTORY_SIZE = 750
 TABLE_HEIGHT = 959
@@ -80,8 +77,10 @@ class Chatbox:
             st.session_state.prompt = ""
         if "selected_question" not in st.session_state:
             st.session_state.selected_question = ""
+        # Initialize chat history in session state if it doesn't exist
+        if "chat_history" not in st.session_state:
+            st.session_state.chat_history = []
 
-        global CHAT_HISTORY
         # Predefined questions buttons
         if page_name in self.predefined_questions:
             predefined_questions_to_display = self.predefined_questions[page_name]
@@ -119,7 +118,7 @@ class Chatbox:
                 with st.chat_message("user"):
                     st.markdown(prompt)
 
-                for message in reversed(CHAT_HISTORY):
+                for message in reversed(st.session_state.chat_history):
                     with st.chat_message(message["role"]):
                         st.markdown(message["content"], unsafe_allow_html=True)
 
@@ -127,7 +126,7 @@ class Chatbox:
                 full_response = ""
 
                 chat_history = []
-                for msg in CHAT_HISTORY:
+                for msg in st.session_state.chat_history:
                     if msg["role"] == "user":
                         chat_history.append(HumanMessage(content=msg["content"]))
                     elif msg["role"] == "assistant":
@@ -173,23 +172,23 @@ class Chatbox:
                 message_placeholder.markdown(full_response, unsafe_allow_html=True)
 
                 # Add to chat history
-                CHAT_HISTORY.append({"role": "user", "content": prompt})
+                st.session_state.chat_history.append({"role": "user", "content": prompt})
 
                 # Only add the bot response if it exists
                 if full_response:
-                    CHAT_HISTORY.append({"role": "assistant", "content": full_response})
+                    st.session_state.chat_history.append({"role": "assistant", "content": full_response})
                     # Clear the prompt after processing
                     st.session_state.prompt = ""
                     st.rerun()
         else:
             with messages_container:
-                for message in reversed(CHAT_HISTORY):
+                for message in reversed(st.session_state.chat_history):
                     with st.chat_message(message["role"]):
                         st.markdown(message["content"], unsafe_allow_html=True)
 
         if st.button("Reset reports backlog", help="Sets the number of reports in the system back to 50.", use_container_width=True):
             self.report_service.reset_the_reports(50)
-            CHAT_HISTORY.clear()
+            st.session_state.chat_history.clear()
             st.rerun()
 
 class ReportTable:
@@ -260,7 +259,7 @@ def display_app_content(authenticator):
     with col2:
         def logout_callback(details: dict):
             report_service.reset_the_reports(50)
-            CHAT_HISTORY.clear()
+            st.session_state.chat_history.clear()
 
         authenticator.logout("Logout", callback=logout_callback)
             

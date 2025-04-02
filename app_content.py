@@ -214,9 +214,6 @@ class ReportTable:
             else:
                 return label
     
-    def make_clickable_link(self, report_id) -> str:
-        return self.report_link_template.format(report_id=report_id, link_text="View Report")
-
     def render(self):
         all_reports = self.report_service.get_all_reports()
         if not all_reports:
@@ -237,7 +234,10 @@ class ReportTable:
                 col4.write(report.reporting_period_start)
                 col5.write(report.reporting_period_end)
                 col6.write(self.convert_stage_label(report.stage))
-                col7.markdown(self.make_clickable_link(report.report_id), unsafe_allow_html=True)
+                if col7.button(f"View", key=f"view_{report.report_id}"):
+                    st.session_state["selected_report_data"] = report
+                    st.session_state["page"] = "report_view"
+                    st.rerun()
                 
 
 def display_app_content(authenticator):
@@ -326,17 +326,6 @@ def display_app_content(authenticator):
 
         table = ReportTable(report_service)
         table.render()
-
-        # Get report id from query param
-        if st.query_params.get("report_id"):
-            selected_report_id = st.query_params.get("report_id")
-
-            report = next((r for r in all_reports if r.report_id == selected_report_id), None)
-            if report:
-                st.session_state["selected_report_data"] = report
-                st.session_state["page"] = "report_view"
-                st.query_params.clear()
-                st.rerun()
 
     def report_view_page():
         if st.button("Back to Reports"):

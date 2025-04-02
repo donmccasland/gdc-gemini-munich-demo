@@ -1,3 +1,4 @@
+import asyncio
 import json
 import os
 import random
@@ -353,3 +354,14 @@ def display_app_content(authenticator):
     with col2:
         chatbox = Chatbox(llm, report_service)
         chatbox.render(page_name, st.session_state["selected_report_data"])
+
+    async def test_ticker(col):
+        while page_name == "report_selection":
+            if len(report_service.reports) >= 500:
+                return
+            report_service.generate_new_report()
+            with col1_container.container():
+                report_selection_page()
+                await asyncio.sleep(60)
+
+    asyncio.run(test_ticker(col1))

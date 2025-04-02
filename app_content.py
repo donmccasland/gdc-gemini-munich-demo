@@ -210,8 +210,12 @@ def display_app_content(authenticator):
         st.title("Fraud Analysis Assistant")
 
     with col2:
-        authenticator.logout()
+        def logout_callback(details: dict):
+            report_service.reset_the_reports(50)
+            CHAT_HISTORY.clear()
 
+        authenticator.logout("Logout", callback=logout_callback)
+            
     col1, col2 = st.columns([0.7, 0.3], border=True)
 
     if "page" not in st.session_state:

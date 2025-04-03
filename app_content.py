@@ -149,6 +149,10 @@ class Chatbox:
                     
                     Do not generate any HTML code.
 
+                    Keep your language to English.
+
+                    Summarize results(if relevant) if output is going to be more than a few paragraphs.
+
                     User Query: {prompt}
                     """
 
@@ -184,7 +188,7 @@ class Chatbox:
                 for message in reversed(st.session_state.chat_history):
                     with st.chat_message(message["role"]):
                         st.markdown(message["content"], unsafe_allow_html=True)
-                        
+
 
 class ReportTable:
     def __init__(self, report_manager):

@@ -184,11 +184,7 @@ class Chatbox:
                 for message in reversed(st.session_state.chat_history):
                     with st.chat_message(message["role"]):
                         st.markdown(message["content"], unsafe_allow_html=True)
-
-        if st.button("Reset reports backlog", help="Sets the number of reports in the system back to 50.", use_container_width=True):
-            self.report_manager.reset_the_reports(50)
-            st.session_state.chat_history.clear()
-            st.rerun()
+                        
 
 class ReportTable:
     def __init__(self, report_manager):

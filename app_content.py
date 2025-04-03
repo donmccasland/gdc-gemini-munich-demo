@@ -21,7 +21,7 @@ import pandas as pd
 import plotly.graph_objects as go
 
 from fraud_report import FraudReportGenerator, FraudReport, FraudReportStatus
-from report_service import get_report_service
+from report_manager import ReportManager  # Import ReportManager
 
 
 REPORT_LINK_TEMPLATE = '<a href="?report_id={report_id}" target="_self" rel="noopener noreferrer">{link_text}</a>'
@@ -30,12 +30,11 @@ REPORT_LINK_TEMPLATE = '<a href="?report_id={report_id}" target="_self" rel="noo
 MESSAGE_HISTORY_SIZE = 750
 TABLE_HEIGHT = 959
 
-def replace_report_ids_with_links(text: str) -> str:
+def replace_report_ids_with_links(text: str, report_manager: ReportManager) -> str:
     """
-    Gets all available report IDs from report service and replaces them with <a> links.
+    Gets all available report IDs from report manager and replaces them with <a> links.
     """
-    report_service = get_report_service()
-    all_report_ids = report_service.get_report_ids()
+    all_report_ids = report_manager.get_report_ids()
     for report_id in all_report_ids:
         text = text.replace(report_id, REPORT_LINK_TEMPLATE.format(report_id=report_id, link_text=report_id))
     return text
@@ -58,9 +57,9 @@ def initialize_gemini():
         st.stop()
 
 class Chatbox:
-    def __init__(self, llm, report_service):
+    def __init__(self, llm, report_manager):
         self.llm = llm
-        self.report_service = report_service
+        self.report_manager = report_manager
         self.predefined_questions = {
             "report_view": [
                 "What are the key trends identified in this report?",
@@ -133,7 +132,7 @@ class Chatbox:
                         chat_history.append(AIMessage(content=msg["content"]))
 
                 if page_name == "report_selection":
-                    attach_data = "\n".join(fr.model_dump_json() for fr in self.report_service.get_all_reports())
+                    attach_data = "\n".join(fr.model_dump_json() for fr in self.report_manager.get_all_reports())
                     data_desc = "Here is the data of all available fraud reports: "
                 elif page_name == "report_view":
                     attach_data = json.dumps(selected_report_data.model_dump_json())
@@ -146,7 +145,7 @@ class Chatbox:
                     The data may have been updated since the last message in the conversation, so please make 
                     sure you check you answers - if it's still applicable.
                     
-                    Current number of reports is: {len(self.report_service.get_all_reports())}
+                    Current number of reports is: {len(self.report_manager.get_all_reports())}
                     
                     Do not generate any HTML code.
 
@@ -168,7 +167,7 @@ class Chatbox:
                     message_placeholder.markdown(full_response + "▌")
 
                 # Replacing report IDs with links
-                full_response = replace_report_ids_with_links(full_response)
+                full_response = replace_report_ids_with_links(full_response, self.report_manager)
                 message_placeholder.markdown(full_response, unsafe_allow_html=True)
 
                 # Add to chat history
@@ -187,13 +186,13 @@ class Chatbox:
                         st.markdown(message["content"], unsafe_allow_html=True)
 
         if st.button("Reset reports backlog", help="Sets the number of reports in the system back to 50.", use_container_width=True):
-            self.report_service.reset_the_reports(50)
+            self.report_manager.reset_the_reports(50)
             st.session_state.chat_history.clear()
             st.rerun()
 
 class ReportTable:
-    def __init__(self, report_service):
-        self.report_service = report_service
+    def __init__(self, report_manager):
+        self.report_manager = report_manager
         self.table_height = TABLE_HEIGHT
         self.report_link_template = REPORT_LINK_TEMPLATE
 
@@ -214,7 +213,7 @@ class ReportTable:
                 return label
     
     def render(self):
-        all_reports = self.report_service.get_all_reports()
+        all_reports = self.report_manager.get_all_reports()
         if not all_reports:
             st.write("No reports found.")
             return
@@ -249,7 +248,11 @@ def display_app_content(authenticator):
     </style>
     """.format(css=open("style.css").read()), unsafe_allow_html=True)
 
-    report_service = get_report_service()
+    # Initialize ReportManager in session state
+    if "report_manager" not in st.session_state:
+        st.session_state.report_manager = ReportManager()
+    report_manager = st.session_state.report_manager
+
     report_generator = FraudReportGenerator()
     col1, col2 = st.columns([0.7, 0.3], border=False)
 
@@ -258,7 +261,7 @@ def display_app_content(authenticator):
 
     with col2:
         def logout_callback(details: dict):
-            report_service.reset_the_reports(50)
+            report_manager.reset_the_reports(50)
             st.session_state.chat_history.clear()
 
         authenticator.logout("Logout", callback=logout_callback)
@@ -309,7 +312,7 @@ def display_app_content(authenticator):
             st.metric("24h Transactions", stats["total_transactions"])
             
     def report_selection_page():
-        all_reports = report_service.get_all_reports()
+        all_reports = report_manager.get_all_reports()
         if not all_reports:
             st.write("No reports found.")
             return
@@ -323,7 +326,7 @@ def display_app_content(authenticator):
         with dashboard_container.container():
             display_dashboard(stats)
 
-        table = ReportTable(report_service)
+        table = ReportTable(report_manager)
         table.render()
 
     def report_view_page():
@@ -351,16 +354,15 @@ def display_app_content(authenticator):
 
     # Sidebar Chat
     with col2:
-        chatbox = Chatbox(llm, report_service)
+        chatbox = Chatbox(llm, report_manager)
         chatbox.render(page_name, st.session_state["selected_report_data"])
 
     async def test_ticker(col):
         while page_name == "report_selection":
-            if len(report_service.reports) >= 500:
+            if len(report_manager.reports) >= 500:
                 return
-            report_service.generate_new_report()
-            with col1_container.container():
-                report_selection_page()
-                await asyncio.sleep(60)
+            report_manager.generate_new_report()
+            st.rerun()
+            await asyncio.sleep(60)
 
     asyncio.run(test_ticker(col1))

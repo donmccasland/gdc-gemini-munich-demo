@@ -195,6 +195,7 @@ class ReportTable:
         self.report_manager = report_manager
         self.table_height = TABLE_HEIGHT
         self.report_link_template = REPORT_LINK_TEMPLATE
+        self.button_counter = 0
 
     def convert_stage_label(self, label):
         """
@@ -232,7 +233,8 @@ class ReportTable:
                 col4.write(report.reporting_period_start)
                 col5.write(report.reporting_period_end)
                 col6.write(self.convert_stage_label(report.stage))
-                if col7.button(f"Open", key=f"view_{report.report_id}"):
+                self.button_counter += 1
+                if col7.button(f"Open", key=f"view_{report.report_id}_{self.button_counter}"):
                     st.session_state["selected_report_data"] = report
                     st.session_state["page"] = "report_view"
                     st.rerun()

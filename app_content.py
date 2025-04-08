@@ -27,8 +27,8 @@ from report_manager import ReportManager  # Import ReportManager
 REPORT_LINK_TEMPLATE = '<a href="?report_id={report_id}" target="_self" rel="noopener noreferrer">{link_text}</a>'
 
 # Configurable heights for allowing scrolling
-MESSAGE_HISTORY_SIZE = 1650
-TABLE_HEIGHT = 1585
+MESSAGE_HISTORY_SIZE = 1750
+TABLE_HEIGHT = 1685
 
 def replace_report_ids_with_links(text: str, report_manager: ReportManager) -> str:
     """

@@ -4,6 +4,7 @@ import os
 import random
 import time
 import yaml
+import datetime
 
 from yaml.loader import SafeLoader
 
@@ -20,9 +21,12 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 import pandas as pd
 import plotly.graph_objects as go
 
-from fraud_report import FraudReportGenerator, FraudReport, FraudReportStatus
+from signals_report import SignalsReportGenerator, SignalsReport, SignalsReportStatus
 from report_manager import ReportManager  # Import ReportManager
 
+def debug_log(msg):
+    with open("debug.log", "a") as f:
+        f.write(f"{datetime.datetime.now()}: {msg}\n")
 
 REPORT_LINK_TEMPLATE = '<a href="?report_id={report_id}" target="_self" rel="noopener noreferrer">{link_text}</a>'
 
@@ -133,10 +137,10 @@ class Chatbox:
 
                 if page_name == "report_selection":
                     attach_data = "\n".join(fr.model_dump_json() for fr in self.report_manager.get_all_reports())
-                    data_desc = "Here is the data of all available fraud reports: "
+                    data_desc = "Here is the data of all available signals reports: "
                 elif page_name == "report_view":
                     attach_data = json.dumps(selected_report_data.model_dump_json())
-                    data_desc = "Here is the data of currently inspected fraud report: "
+                    data_desc = "Here is the data of currently inspected signals report: "
 
                 full_prompt = f"""
                     {data_desc}
@@ -202,7 +206,7 @@ class ReportTable:
         Converts the stage label to a user-friendly format, handling the prefix.
         """
         if isinstance(label, str):
-            if label.startswith("FraudReportStatus."):
+            if label.startswith("SignalsReportStatus."):
                 label = label.split(".", 1)[1]  # Remove the prefix
             if label == "alert_review":
                 return "Alert Review"
@@ -241,8 +245,10 @@ class ReportTable:
                 
 
 def display_app_content(authenticator):
+    debug_log("Starting display_app_content")
     """Displays the main content of the app (report/chat view)."""
     llm, genai_client = initialize_gemini()
+    debug_log("Gemini initialized")
 
     st.markdown("""
     <style>
@@ -252,51 +258,61 @@ def display_app_content(authenticator):
 
     # Initialize ReportManager in session state
     if "report_manager" not in st.session_state:
+        debug_log("Initializing ReportManager")
         st.session_state.report_manager = ReportManager()
     report_manager = st.session_state.report_manager
+    debug_log("ReportManager ready")
 
-    report_generator = FraudReportGenerator()
+    report_generator = SignalsReportGenerator()
+    debug_log("SignalsReportGenerator ready")
     col1, col2 = st.columns([0.7, 0.3], border=False)
+    debug_log("Columns created")
 
     with col1:
-        st.title("Fraud Analysis Assistant")
+        st.title("Signals Analysis Assistant")
 
     with col2:
         def logout_callback(details: dict):
             report_manager.reset_the_reports(50)
             st.session_state.chat_history.clear()
 
+        debug_log("Rendering logout button")
         authenticator.logout("Logout", callback=logout_callback)
             
     col1, col2 = st.columns([0.7, 0.3], border=True)
+    debug_log("Second columns created")
 
     if "page" not in st.session_state:
+        debug_log("Initializing page in session state")
         st.session_state["page"] = "report_selection"
     if "selected_report_data" not in st.session_state:
+        debug_log("Initializing selected_report_data in session state")
         st.session_state["selected_report_data"] = None
 
-    def calculate_dashboard_stats(all_reports: list[FraudReport]):
+    debug_log("Defining calculate_dashboard_stats")
+    def calculate_dashboard_stats(all_reports: list[SignalsReport]):
         """Calculates dashboard statistics from a list of reports."""
         total_reports = len(all_reports)
-        total_fraud_transactions = 0
+        total_signals_transactions = 0
         total_transactions = 0
 
         for report in all_reports:
-            total_fraud_transactions += len(report.transactions)
+            total_signals_transactions += len(report.transactions)
             total_transactions += report.total_number_of_transactions
 
         if total_transactions > 0:
-            fraud_percentage = (total_fraud_transactions / total_transactions) * 100
+            signals_percentage = (total_signals_transactions / total_transactions) * 100
         else:
-            fraud_percentage = 0
+            signals_percentage = 0
 
         return {
             "total_reports": total_reports,
-            "fraud_percentage": fraud_percentage,
-            "total_fraud_transactions": total_fraud_transactions,
+            "signals_percentage": signals_percentage,
+            "total_signals_transactions": total_signals_transactions,
             "total_transactions": total_transactions,
         }
 
+    debug_log("Defining display_dashboard")
     def display_dashboard(stats):
         col1, col2, col3, col4 = st.columns(4)
 
@@ -304,17 +320,20 @@ def display_app_content(authenticator):
             st.metric("Total Reports", stats["total_reports"])
 
         with col2:
-            formatted_fraud_percentage = f"{stats['fraud_percentage']:.2f}%"
-            st.metric("24h Fraud Percentage", formatted_fraud_percentage)
+            formatted_signals_percentage = f"{stats['signals_percentage']:.2f}%"
+            st.metric("24h Signals Percentage", formatted_signals_percentage)
 
         with col3:
-            st.metric("24h Fraud Transactions", stats["total_fraud_transactions"])
+            st.metric("24h Signals Transactions", stats["total_signals_transactions"])
 
         with col4:
             st.metric("24h Transactions", stats["total_transactions"])
             
+    debug_log("Defining report_selection_page")
     def report_selection_page():
+        debug_log("Entering report_selection_page")
         all_reports = report_manager.get_all_reports()
+        debug_log(f"Found {len(all_reports)} reports")
         if not all_reports:
             st.write("No reports found.")
             return
@@ -331,6 +350,7 @@ def display_app_content(authenticator):
         table = ReportTable(report_manager)
         table.render()
 
+    debug_log("Defining report_view_page")
     def report_view_page():
         if st.button("Back to Reports"):
             st.session_state["page"] = "report_selection"
@@ -345,6 +365,7 @@ def display_app_content(authenticator):
             st.write("Please select a report from the previous page.")
 
     page_name = st.session_state["page"]
+    debug_log(f"Current page: {page_name}")
 
     with col1:
         col1_container = st.empty()

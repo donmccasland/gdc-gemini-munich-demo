@@ -10,7 +10,7 @@ from faker.providers import bank
 from google import genai
 from google.genai.types import GenerateContentConfig
 
-from fraud_report import *
+from signals_report import *
 
 client = genai.Client(vertexai=True, project='gemini-gdc-demo', location='us-central1')
 fake = Faker()
@@ -25,22 +25,22 @@ def random_datetime(start, end):
     return datetime.datetime(start.year, start.month, start.day) + datetime.timedelta(seconds=random_second)
 
 
-def generate_report() -> FraudReport:
+def generate_report() -> SignalsReport:
     start = time.time()
     response = client.models.generate_content(
         model='gemini-2.0-flash',
-        contents=f'Generate an example fraud report following the given schema. '
-                 f'The report should feature between 2 and 8 fraudulent transactions.'
+        contents=f'Generate an example signals report following the given schema. '
+                 f'The report should feature between 2 and 8 signals transactions.'
                  f'Current date is {datetime.datetime.now()}, make the reports as recent as possible.',
         config=GenerateContentConfig(
             temperature=0.8,
             candidate_count=1,
             response_mime_type='application/json',
-            response_schema=FraudReport,
+            response_schema=SignalsReport,
         ),
     )
-    print(f"New fraud report generated in: {time.time() - start}s")
-    fr = FraudReport.model_validate_json(response.text)
+    print(f"New signals report generated in: {time.time() - start}s")
+    fr = SignalsReport.model_validate_json(response.text)
     fr.report_id = uuid.uuid4().hex[:10].upper()
     fr.client_name = fake.name()
     fr.total_number_of_transactions = int(len(fr.transactions) / (random.random() / 10))
@@ -52,14 +52,14 @@ def generate_report() -> FraudReport:
     start = time.time()
     response = client.models.generate_content(
         model='gemini-2.0-flash',
-        contents=f"Generate a summary fo the following fraud report: {fr.model_dump_json()}",
+        contents=f"Generate a summary fo the following signals report: {fr.model_dump_json()}",
         config=GenerateContentConfig(
             temperature=0.2,
             candidate_count=1,
             response_mime_type='text/plain',
         )
     )
-    print(f"Generated summary of the fraud report in: {time.time() - start}s")
+    print(f"Generated summary of the signals report in: {time.time() - start}s")
     fr.executive_summary = response.text
     return fr
 
@@ -87,4 +87,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-

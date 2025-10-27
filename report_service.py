@@ -9,7 +9,7 @@ from generate_sample_reports import generate_report
 from faker import Faker
 from google.genai.types import GenerateContentConfig
 
-from fraud_report import FraudReportGenerator, FraudReport
+from signals_report import SignalsReportGenerator, SignalsReport
 
 fake = Faker()
 
@@ -27,7 +27,7 @@ class ReportService:
     def __init__(self, report_file_path="multiple_reports.json"):
         """Initializes the ReportService with the path to the report file."""
         self.report_file_path = report_file_path
-        self.report_generator = FraudReportGenerator()
+        self.report_generator = SignalsReportGenerator()
         self.reports = self._load_reports()
         self.reports = random.sample(self.reports, 50)
         self.reports.sort(key=lambda x: x.report_date, reverse=True)
@@ -39,13 +39,13 @@ class ReportService:
         random_second = random.randrange(int_delta)
         return datetime.datetime(start.year, start.month, start.day) + datetime.timedelta(seconds=random_second)
 
-    def _load_reports(self) -> list[FraudReport]:
-        """Loads fraud reports from the specified JSON file."""
+    def _load_reports(self) -> list[SignalsReport]:
+        """Loads signals reports from the specified JSON file."""
         if os.path.exists(self.report_file_path):
             try:
                 with open(self.report_file_path, "r") as f:
                     reports_data = json.load(f)
-                    reports_data = [FraudReport(**report) for report in reports_data]
+                    reports_data = [SignalsReport(**report) for report in reports_data]
                     return reports_data  # Assuming your file contains a list of reports
             except (json.JSONDecodeError, FileNotFoundError) as e:
                 print(f"Error loading reports: {e}")
@@ -54,8 +54,8 @@ class ReportService:
             print(f"Report file not found: {self.report_file_path}")
             return []
 
-    def get_all_reports(self) -> list[FraudReport]:
-        """Returns all loaded fraud reports."""
+    def get_all_reports(self) -> list[SignalsReport]:
+        """Returns all loaded signals reports."""
         return self.reports
 
     def generate_new_report(self):

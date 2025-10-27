@@ -1,0 +1,65 @@
+THREAT ASSESSMENT: DRONE-RELATED FLIGHT DISRUPTIONS
+
+**Document Version:** 1.2
+**Date Issued:** 2024-02-29
+**Classification:** UNCLASSIFIED//FOR OFFICIAL USE ONLY
+
+**1. Executive Summary**
+
+This assessment examines the potential threat of drones disrupting commercial and private air traffic. The risk is considered MODERATE, with the potential for significant impact depending on the scale and intent of the disruption. Mitigation strategies are outlined to reduce vulnerability.
+
+**2. Threat Actor(s) - Potential Originators**
+
+*   **Category 1: Malicious Actors:**
+    *   **Motivation:** Terrorism, vandalism, economic disruption, political activism, personal vendettas.
+    *   **Capabilities:** Vary widely, from basic off-the-shelf drone operation to sophisticated modification and swarming capabilities. Access to drone technology is readily available.
+    *   **Indicators:** Online chatter referencing aviation disruption, acquisition of multiple drones or drone components, demonstrated expertise in radio frequency jamming.
+*   **Category 2: Negligent/Unaware Operators:**
+    *   **Motivation:** Lack of awareness regarding drone regulations, unintentional airspace violations, reckless flying.
+    *   **Capabilities:** Limited; typically operating consumer-grade drones with limited range and payload capacity.
+    *   **Indicators:** Reports of drones operating in restricted airspace, near airports, or above permitted altitudes; lack of knowledge about drone operation regulations.
+*   **Category 3: State-Sponsored Actors:**
+    *   **Motivation:** Espionage, sabotage, reconnaissance, testing of air defense systems.
+    *   **Capabilities:** Advanced; access to sophisticated drone technology, including long-range, autonomous, and potentially weaponized drones. Deep understanding of airspace procedures and vulnerabilities.
+    *   **Indicators:** Unusual drone flight patterns near critical infrastructure, persistent attempts to penetrate secured airspace, sophisticated electronic warfare capabilities detected.
+
+**3. Intended Victim - Target Profile**
+
+*   **Primary Target:** Commercial aviation (passenger and cargo flights).
+*   **Secondary Target:** Private aviation, general aviation airports, military airfields.
+*   **Vulnerability Factors:** Airport proximity to populated areas, ease of access to surrounding airspace, reliance on unencrypted communication channels (ADS-B).
+
+**4. Mode of Attack - Methodology**
+
+*   **Direct Physical Intrusion:** Drone physically obstructing flight path, causing near-miss incidents, forced landings, or collisions.
+*   **Electronic Interference:** Jamming GPS signals, interfering with communication between aircraft and air traffic control.
+*   **Payload Delivery:** Drone carrying a disruptive payload (e.g., blinding laser, chemicals, explosives).
+*   **Swarming Attacks:** Coordinated operation of multiple drones to overwhelm air traffic control and create widespread disruption.
+*   **Reconnaissance/Surveillance:** Using drones to gather intelligence on airport security procedures, aircraft movements, and vulnerabilities.
+*   **Cyber Attack:** Gaining unauthorized access to drone control systems or air traffic control networks to manipulate drone behavior or flight data.
+
+**5. Temporal Aspects - Timing and Frequency**
+
+*   **Potential Window:** 24/7/365. Attacks can occur at any time, but are more likely during peak flight times or during periods of heightened security alert.
+*   **Likelihood:** Isolated incidents are relatively frequent (weekly reports of drone sightings near airports). Coordinated or high-impact attacks are less likely, but the potential consequences necessitate vigilance.
+*   **Specific Instance:** A drone was reported within 2km of Runway 27 at City Airport, London at 14:35 GMT on February 28th, 2024. The drone was described as a DJI Mavic Pro (or similar) and was at an altitude of approximately 150m.
+
+**6. Impact Assessment**
+
+*   **Safety:** Potential for aircraft damage, injury, or loss of life.
+*   **Economic:** Flight delays, cancellations, lost revenue, increased security costs.
+*   **Reputational:** Damage to airline and airport reputations, loss of public confidence in air travel.
+*   **Operational:** Disruption to air traffic flow, increased workload for air traffic controllers, diversion of resources to drone detection and mitigation.
+
+**7. Mitigation Strategies**
+
+*   **Enhanced Drone Detection Systems:** Radar, acoustic sensors, radio frequency analysis.
+*   **Geofencing:** Restricting drone flight within designated areas.
+*   **Drone Countermeasures:** Jamming, spoofing, drone capture systems (authorization and legality dependent on jurisdiction).
+*   **Public Awareness Campaigns:** Educating the public about drone regulations and responsible operation.
+*   **Law Enforcement Collaboration:** Establishing protocols for reporting and responding to drone-related incidents.
+*   **Cybersecurity Enhancements:** Protecting air traffic control networks from cyber attacks.
+
+**8. Conclusion**
+
+The threat of drones disrupting flights is a significant and evolving concern. Proactive mitigation strategies are essential to protect the safety and security of air travel. Continuous monitoring of the threat landscape and adaptation of security measures are crucial.

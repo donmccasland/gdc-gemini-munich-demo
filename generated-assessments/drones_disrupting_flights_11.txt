@@ -1,0 +1,56 @@
+## Threat Assessment: Unmanned Aerial System (UAS) Flight Disruption - v1.0
+
+**Executive Summary:** This assessment evaluates the potential threat posed by Unmanned Aerial Systems (UAS), commonly known as drones, disrupting scheduled flight operations at [Airport Name], and surrounding airspace. The assessed threat level is MODERATE, based on the increasing accessibility of UAS technology, the potential for both malicious and unintentional disruptions, and the significant impact such disruptions can have on safety and airport operations. Mitigation strategies are outlined to reduce vulnerability and minimize the impact of potential incidents.
+
+**1. Threat Origin:**
+
+*   **Primary Vector:** Civilian Operated UAS (hobbyist/commercial)
+*   **Motivation:**
+    *   **Unintentional:** Lack of awareness regarding airspace regulations, limited UAS piloting skills, equipment malfunction.
+    *   **Intentional (Malicious):** Disrupt airport operations, vandalism/property damage, gain media attention, potentially terroristic acts (less likely, but must be considered).
+*   **Attacker Profile:** Ranging from untrained hobbyists to potentially organized groups with malicious intent. Geographic proximity to the airport significantly increases risk.
+
+**2. Victim Profile:**
+
+*   **Designated Asset:** Scheduled commercial and private aircraft operating to and from [Airport Name].
+*   **Secondary Assets:** Airport infrastructure (runways, taxiways, navigational aids), air traffic control operations, passenger safety, airport reputation.
+*   **Vulnerability Factors:** Proximity to populated areas, open airspace relatively accessible to UAS operators, reliance on uninterrupted air traffic flow.
+
+**3. Attack Methodology (TTPs - Tactics, Techniques, and Procedures):**
+
+*   **Disruption Techniques:**
+    *   **Direct Airspace Intrusion:** UAS flown within controlled airspace, posing a collision hazard to aircraft.
+    *   **GPS Spoofing/Jamming:** Intentional interference with GPS signals used by aircraft and airport systems (less common, requires specialized equipment).
+    *   **Visual Obstruction:** UAS flown in proximity to runways or taxiways, creating visual distractions for pilots and air traffic controllers.
+    *   **Payload Delivery:** Although less likely for simple disruption, potential for UAS to carry payloads (e.g., smoke, small objects) that could damage aircraft or infrastructure.
+*   **Access Vectors:** Publicly available information (e.g., flight schedules, airport layouts), over-the-counter purchase of UAS technology, open-source software for UAS control.
+*   **Detection Evasion:** UAS flown at night or during periods of low visibility, use of autonomous flight capabilities, deliberate attempts to conceal UAS location.
+
+**4. Temporal Analysis:**
+
+*   **Incident Record:** [Date] at [Time]. A UAS was reported near the [Runway ID] approach path. Investigation ongoing.
+*   **Peak Risk Periods:** High traffic volume periods (morning and evening rush), weekends, holidays, special events (e.g., air shows) that attract UAS operators.
+*   **Weather Conditions:** Periods of clear visibility can increase risk as it makes the asset a easier target. Adverse weather may limit UAS operation.
+*   **Forecasted Timing:** The overall risk is projected to increase over the next 12 months due to the continued proliferation of UAS technology and the growing awareness of their potential disruptive capabilities.
+
+**5. Impact Assessment:**
+
+*   **Potential Consequences:**
+    *   Flight delays and cancellations.
+    *   Increased risk of near-miss incidents or collisions.
+    *   Damage to aircraft or airport infrastructure.
+    *   Economic losses for airlines and airport operators.
+    *   Reputational damage for [Airport Name].
+    *   Erosion of public confidence in air travel safety.
+*   **Severity Level:** MODERATE (Potential for significant disruption and economic impact, with a moderate risk of physical harm).
+*   **Likelihood:** PROBABLE (Given the increasing frequency of reported UAS incidents near airports).
+
+**6. Mitigation Recommendations:**
+
+*   Enhance perimeter security measures, including drone detection and counter-UAS technologies.
+*   Increase public awareness campaigns regarding UAS regulations and the dangers of flying near airports.
+*   Strengthen coordination and information sharing between airport security, law enforcement, and air traffic control.
+*   Develop and implement clear protocols for responding to UAS incidents, including procedures for suspending flight operations if necessary.
+*   Invest in training for airport personnel on UAS identification and threat assessment.
+
+**7. Assessment Validity:** This assessment is valid for six months from the date of issuance, or until significant changes in the threat landscape or airport operations warrant an earlier update.

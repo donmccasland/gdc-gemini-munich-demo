@@ -1,0 +1,64 @@
+threat_id: DRONE_DISRUPTION_2024-10-27-001
+assessment_name: Unmanned Aerial Vehicle (UAV) Flight Disruption Threat
+date_issued: 2024-10-27
+version: 1.0
+status: Active
+
+threat_origin:
+  actor_type: Malicious Civilian/Hobbyist
+  motivation: Disruption, potential extortion.
+  capabilities:
+    - Basic drone piloting skills
+    - Access to commercially available drones
+    - Limited knowledge of aviation regulations
+  indicators:
+    - Social media posts expressing anti-establishment views.
+    - Online forum participation in drone-related discussions.
+    - Past history of reckless behavior.
+
+attack_vector:
+  methodology: Unauthorized drone operation within restricted airspace.
+  techniques:
+    - Flying drones near airport approach/departure paths.
+    - Disrupting air traffic control communications (potential).
+    - Geo-fencing violations.
+  expected_impact:
+    - Flight delays and cancellations.
+    - Near-miss incidents.
+    - Potential for collisions causing damage and casualties.
+    - Reputational damage to the airline and airport.
+
+vulnerable_entity:
+  asset_type: Commercial Aviation
+  impacted_areas:
+    - Airport runways and taxiways
+    - Approach and departure corridors
+    - Air traffic control systems
+  defense_gaps:
+    - Limited drone detection and countermeasure capabilities.
+    - Inadequate enforcement of no-fly zones.
+    - Lack of public awareness regarding drone regulations.
+
+attack_schedule:
+  date_of_incident: 2024-10-27
+  time_of_incident: 14:35 UTC
+  patterns:
+    - Increased drone activity during peak travel times (holidays, weekends).
+    - Coordinated attacks involving multiple drones (potential).
+
+risk_assessment:
+  likelihood: Medium
+  impact: High
+  overall_risk: High
+
+recommended_mitigations:
+  - Enhance drone detection and tracking capabilities.
+  - Implement drone countermeasures (e.g., jamming, drone capture).
+  - Strengthen enforcement of no-fly zones.
+  - Increase public awareness regarding drone regulations.
+  - Improve coordination between aviation authorities and law enforcement.
+  - Develop and implement drone incident response plans.
+  - Continuously monitor drone activity near critical infrastructure.
+
+analyst: John Smith
+approver: Jane Doe

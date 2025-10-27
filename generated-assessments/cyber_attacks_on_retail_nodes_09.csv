@@ -1,0 +1,16 @@
+RiskActor,CompromisedAsset,ExploitationType,AttackDateTime,ImpactLevel,ConfidenceLevel,MitigationStrategy,Notes
+APT39,Point-of-Sale System A,Credential Stuffing,2024-01-15 03:22 UTC,High,Medium,Multi-Factor Authentication,Compromised credentials from previous breach.
+FIN7,Central Database Server,SQL Injection,2024-02-29 21:08 UTC,Critical,High,Web Application Firewall (WAF),Exploited unpatched vulnerability in e-commerce platform.
+REvil,Inventory Management System,Ransomware,2024-03-10 14:57 UTC,Critical,High,Offline Backups,Demanded $5 million in Bitcoin for data decryption.
+Magecart Group,E-commerce Website,Web Skimming,2024-04-05 19:31 UTC,Medium,High,Payment Card Intrusion Detection System,Stolen credit card information from online checkout page.
+Insider Threat,Gift Card Processing Server,Privilege Escalation,2024-05-12 10:05 UTC,High,Low,Least Privilege Principle,Employee exploited misconfiguration to transfer funds to personal account.
+DDoS Botnet,Retail Website,Distributed Denial of Service,2024-06-20 16:44 UTC,Medium,High,Content Delivery Network (CDN),Website unavailable for several hours, impacting sales.
+Script Kiddie,Wireless Network,Man-in-the-Middle Attack,2024-07-03 09:12 UTC,Low,Medium,Wireless Intrusion Detection System (WIDS),Intercepted customer data from unsecured Wi-Fi hotspot.
+Phishing Campaign,Employee Email Accounts,Spear Phishing,2024-08-18 11:59 UTC,Medium,High,Security Awareness Training,Employees tricked into revealing credentials through fake invoices.
+Unidentified,Loyalty Program Database,Brute Force Attack,2024-09-25 02:38 UTC,Medium,Low,Account Lockout Policy,Attempting to gain access to customer reward points.
+Ransomware-as-a-Service,Supply Chain Management System,Supply Chain Attack,2024-10-08 18:15 UTC,High,Medium,Vendor Risk Management,Compromised vendor system led to ransomware infection.
+Nation-State Actor,Customer Data Warehouse,Data Exfiltration,2024-11-14 07:21 UTC,Critical,Low,Data Loss Prevention (DLP),Stolen customer information, including PII and financial data.
+Hacktivist Group,Social Media Account,Account Takeover,2024-12-01 13:00 UTC,Low,Medium,Social Media Monitoring Tools,Defaced social media profile with political message.
+Automated Bot,Product Review System,Fake Reviews,2024-12-20 08:00 UTC,Low,High,Reputation Management Software,Spreading false positive and negative reviews to manipulate product ratings.
+Competitor,Pricing Database,Competitive Intelligence Gathering,2024-01-25 17:00 UTC,Low,Low,Access Controls,Illegally scraped pricing data for competitive advantage.
+Unknown,Mobile App,Reverse Engineering,2024-02-10 14:00 UTC,Medium,Medium,Code Obfuscation,Trying to gain insight into payment processing methods.

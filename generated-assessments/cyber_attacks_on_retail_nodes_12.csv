@@ -1,0 +1,16 @@
+ThreatOrigin,CompromisedAsset,ExploitationVector,Timestamp,ImpactLevel,MitigationStrategy,ConfidenceLevel
+NationStateActor,"Point of Sale (POS) System - Store #12",SQL Injection,2024-10-26T03:15:00Z,High,"Implement Web Application Firewall (WAF) rules, patch POS systems immediately",High
+OrganizedCybercrime,"Customer Database Server",Phishing Campaign targeting store managers,2024-10-27T18:42:00Z,Critical,"Multi-factor authentication (MFA) enforcement, enhanced security awareness training",Medium
+Competitor,Inventory Management System,Supply Chain Attack via compromised vendor software,2024-10-28T11:22:00Z,Medium,"Vendor risk assessment, continuous monitoring of vendor activity",Low
+HacktivistGroup,"Company Website (e-commerce)",Distributed Denial of Service (DDoS),2024-10-29T09:01:00Z,Low,"Content Delivery Network (CDN) with DDoS protection, rate limiting",Medium
+InsiderThreat,"Employee Laptop - Accounting Department",Data Exfiltration via removable media,2024-10-30T14:55:00Z,Medium,"Data Loss Prevention (DLP) software, strict access control policies",Medium
+ScriptKiddie,"Wi-Fi Network - Store #7",Brute-force attack on router password,2024-10-31T21:30:00Z,Low,"Strong password policies, Wi-Fi security hardening",High
+ThirdPartyVendor,"Mobile Payment App",Man-in-the-Middle (MitM) attack,2024-11-01T07:48:00Z,Medium,"SSL/TLS certificate validation, application security testing",Low
+Unknown,"Loyalty Program Database",Cross-Site Scripting (XSS),2024-11-02T16:05:00Z,High,"Input validation, output encoding, regular security audits",Medium
+AutomatedBotnet,"Gift Card Processing System",Credential stuffing attack,2024-11-03T01:10:00Z,Medium,"Account lockout policies, CAPTCHA implementation",High
+RansomwareGang,"File Server - Store #4",Ransomware infection via email attachment,2024-11-04T12:33:00Z,Critical,"Regular backups, endpoint detection and response (EDR) system",High
+VulnerableLegacySystem,"Credit Card Processing Terminal",Unpatched Software Vulnerability,2024-11-05T08:20:00Z,Critical,"Upgrade to supported system, implement virtual patching",High
+DisgruntledCustomer,"Public Facing API Endpoint",API Abuse,2024-11-06T19:58:00Z,Low,"Rate Limiting, input validation, authentication and authorization mechanisms",Medium
+UnsecuredIoTDevice,"Smart Thermostat - Store #9",Compromised IoT Device used as pivot point,2024-11-07T05:55:00Z,Medium,"Network segmentation, IoT device inventory and security hardening",Medium
+ThirdPartySoftware,"Digital Signage System",Malvertising,2024-11-08T13:12:00Z,Low,"Ad blocking software, content filtering",Medium
+CloudServiceProvider,"E-commerce Platform (Cloud-based)",Cloud Misconfiguration,2024-11-09T22:40:00Z,Critical,"Regular security audits, cloud security posture management (CSPM) tools",Medium

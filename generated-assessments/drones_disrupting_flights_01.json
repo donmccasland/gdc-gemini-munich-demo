@@ -1,0 +1,45 @@
+{
+  "assessmentTitle": "Unmanned Aerial System (UAS) Flight Disruption Threat Analysis",
+  "reportID": "TA-2024-10-27-DRONE-FLIGHT",
+  "issueDate": "2024-10-27T14:30:00Z",
+  "threatProfile": {
+    "eventInitiator": {
+      "attackerType": "Unknown",
+      "motivation": "Multiple possible motivations, including: recreational misuse, intentional disruption of air traffic, industrial espionage (observing aircraft approaches/departures), or terrorism.",
+      "technicalSophistication": "Varies. Can range from basic consumer-grade drones operated by inexperienced users to sophisticated, modified UAS platforms operated by skilled actors.",
+      "probableOrigin": {
+        "geographicArea": "Proximity to airport operating areas. Likely within a 5-mile radius initially, possibility extending up to 10 miles.",
+        "jurisdictionalContext": "Likely subject to FAA regulations regarding drone operation near airports. State and local regulations may also apply."
+      }
+    },
+    "impactedAsset": {
+      "assetType": "Commercial and general aviation aircraft",
+      "assetLocation": "Airspace surrounding [Airport Name/ICAO Code]. Specifically, approach and departure corridors.",
+      "potentialDamage": "Near misses, forced diversions, flight delays, runway closures, potential for mid-air collision leading to catastrophic damage, loss of life, and economic disruption. Psychological impact on passengers and crew.",
+	    "affectedParties": ["Airline operators", "Passengers", "Airport Authority", "Air traffic controllers", "Ground crew", "Local businesses"]
+    },
+    "exploitationVector": {
+      "methodOfAttack": "Unauthorized operation of UAS within controlled airspace, creating a hazard to aviation. Visual obstruction of pilots, disruption of air traffic control communications (via jamming or spoofing), potential for physical impact with aircraft.",
+      "attackDetails": "UAS observed flying at altitudes and in locations inconsistent with regulations. Pilot reports of UAS sightings near approach path to runway [Runway Number]. Multiple reports received from air traffic control regarding UAS presence on radar screens. No known communication with air traffic control.",
+      "severityLevel": "High",
+      "likelihood": "Medium. Previous incidents of UAS incursions near airports indicate a recurring threat. Increased recreational drone use contributes to the likelihood."
+    },
+    "incidentDateTime": "2024-10-27T11:00:00Z",
+    "reportingAgency": "Aviation Security Intelligence Agency (fictional)",
+    "countermeasures": [
+      "Enhanced radar systems to detect and track UAS.",
+      "Geofencing technology to prevent UAS from entering restricted airspace.",
+      "Drone detection and mitigation technologies (e.g., drone jammers, drone capture systems).",
+      "Public awareness campaigns to educate drone operators about regulations.",
+      "Increased law enforcement patrols near airports.",
+      "Establishment of clear reporting procedures for UAS sightings.",
+      "Collaboration with UAS manufacturers to improve safety features."
+    ],
+	 "references": [
+      "FAA regulations regarding UAS operation near airports",
+      "NTSB reports on UAS-related aviation incidents",
+      "Academic research on drone detection and mitigation technologies"
+    ],
+    "confidenceLevel": "High. Multiple sources confirm the existence of UAS operating in unauthorized areas near the airport."
+  }
+}

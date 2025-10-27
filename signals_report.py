@@ -23,6 +23,27 @@ class Assessment(BaseModel):
     additional_data: Optional[Dict[str, Any]] = Field(default=None, description="Any other relevant data extracted.")
 
 
+class AssessmentGenerator:
+    def generate_report(self, assessment: Assessment) -> str:
+        return f"""
+# Assessment: {assessment.type}
+
+**ID:** {assessment.assessment_id}
+**Created At:** {assessment.created_at}
+**Original Format:** {assessment.original_format}
+
+## Summary
+*   **Source:** {assessment.source}
+*   **Target:** {assessment.target}
+*   **Method:** {assessment.method}
+*   **Timing:** {assessment.timing}
+
+## Raw Content
+```{assessment.original_format}
+{assessment.raw_content}
+```
+"""
+
 # --- Legacy Signals Report Classes (kept for backward compatibility if needed temporarily) ---
 
 class SignalsReportStatus(str, Enum):

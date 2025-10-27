@@ -21,12 +21,8 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 import pandas as pd
 import plotly.graph_objects as go
 
-from signals_report import SignalsReportGenerator, SignalsReport, SignalsReportStatus
-from report_manager import ReportManager  # Import ReportManager
-
-def debug_log(msg):
-    with open("debug.log", "a") as f:
-        f.write(f"{datetime.datetime.now()}: {msg}\n")
+from signals_report import Assessment, AssessmentGenerator
+from report_manager import ReportManager
 
 REPORT_LINK_TEMPLATE = '<a href="?report_id={report_id}" target="_self" rel="noopener noreferrer">{link_text}</a>'
 
@@ -66,12 +62,12 @@ class Chatbox:
         self.report_manager = report_manager
         self.predefined_questions = {
             "report_view": [
-                "What are the key trends identified in this report?",
-                "What are the main risk factors mentioned in this report?",
+                "What are the key findings in this assessment?",
+                "Summarize the attack method described.",
             ],
             "report_selection": [
-                "Any common patterns in all reports in this list?",
-                "What is the date range of the reports?",
+                "What are the most common assessment types?",
+                "Summarize the recent threats to CNI.",
             ]
         }
 
@@ -136,11 +132,17 @@ class Chatbox:
                         chat_history.append(AIMessage(content=msg["content"]))
 
                 if page_name == "report_selection":
-                    attach_data = "\n".join(fr.model_dump_json() for fr in self.report_manager.get_all_reports())
-                    data_desc = "Here is the data of all available signals reports: "
+                    # Only send a summary or subset of data to avoid token limits with 140 reports
+                    # Sending just metadata for all reports
+                    reports_metadata = [
+                        {"id": r.assessment_id, "type": r.type, "source": r.source, "target": r.target, "timing": r.timing}
+                        for r in self.report_manager.get_all_reports()
+                    ]
+                    attach_data = json.dumps(reports_metadata)
+                    data_desc = "Here is the metadata of all available threat assessments: "
                 elif page_name == "report_view":
-                    attach_data = json.dumps(selected_report_data.model_dump_json())
-                    data_desc = "Here is the data of currently inspected signals report: "
+                    attach_data = selected_report_data.model_dump_json()
+                    data_desc = "Here is the data of currently inspected threat assessment: "
 
                 full_prompt = f"""
                     {data_desc}
@@ -149,7 +151,7 @@ class Chatbox:
                     The data may have been updated since the last message in the conversation, so please make 
                     sure you check you answers - if it's still applicable.
                     
-                    Current number of reports is: {len(self.report_manager.get_all_reports())}
+                    Current number of assessments is: {len(self.report_manager.get_all_reports())}
                     
                     Do not generate any HTML code.
 
@@ -200,55 +202,38 @@ class ReportTable:
         self.table_height = TABLE_HEIGHT
         self.report_link_template = REPORT_LINK_TEMPLATE
         self.button_counter = 0
-
-    def convert_stage_label(self, label):
-        """
-        Converts the stage label to a user-friendly format, handling the prefix.
-        """
-        if isinstance(label, str):
-            if label.startswith("SignalsReportStatus."):
-                label = label.split(".", 1)[1]  # Remove the prefix
-            if label == "alert_review":
-                return "Alert Review"
-            elif label == "case_review":
-                return "Case Review"
-            elif label == "conclusion":
-                return "Conclusion"
-            else:
-                return label
     
     def render(self):
         all_reports = self.report_manager.get_all_reports()
         if not all_reports:
-            st.write("No reports found.")
+            st.write("No assessments found.")
             return
 
         with st.container(height=self.table_height):
-            cols = st.columns(7)  
-            headers = ["Report ID", "Report Date", "Prepared By", "Period Start", "Period End", "Current Stage", "Open Report"]
+            # Adjusted column weights for new fields
+            cols = st.columns([1.2, 2.5, 2, 2, 2, 0.8, 0.8])
+            headers = ["ID", "Type", "Source", "Target", "Timing", "Format", "Open"]
             for i, header in enumerate(headers):
                 cols[i].write(f"**{header}**")
 
             for report in all_reports:
-                col1, col2, col3, col4, col5, col6, col7 = st.columns(7)
-                col1.write(report.report_id)
-                col2.write(report.report_date)
-                col3.write(report.prepared_by)
-                col4.write(report.reporting_period_start)
-                col5.write(report.reporting_period_end)
-                col6.write(self.convert_stage_label(report.stage))
+                cols = st.columns([1.2, 2.5, 2, 2, 2, 0.8, 0.8])
+                cols[0].write(report.assessment_id)
+                cols[1].write(report.type)
+                cols[2].write(report.source)
+                cols[3].write(report.target)
+                cols[4].write(report.timing)
+                cols[5].write(report.original_format)
                 self.button_counter += 1
-                if col7.button(f"Open", key=f"view_{report.report_id}_{self.button_counter}"):
+                if cols[6].button("Open", key=f"view_{report.assessment_id}_{self.button_counter}"):
                     st.session_state["selected_report_data"] = report
                     st.session_state["page"] = "report_view"
                     st.rerun()
                 
 
 def display_app_content(authenticator):
-    debug_log("Starting display_app_content")
     """Displays the main content of the app (report/chat view)."""
     llm, genai_client = initialize_gemini()
-    debug_log("Gemini initialized")
 
     st.markdown("""
     <style>
@@ -258,84 +243,70 @@ def display_app_content(authenticator):
 
     # Initialize ReportManager in session state
     if "report_manager" not in st.session_state:
-        debug_log("Initializing ReportManager")
         st.session_state.report_manager = ReportManager()
     report_manager = st.session_state.report_manager
-    debug_log("ReportManager ready")
 
-    report_generator = SignalsReportGenerator()
-    debug_log("SignalsReportGenerator ready")
+    report_generator = AssessmentGenerator()
     col1, col2 = st.columns([0.7, 0.3], border=False)
-    debug_log("Columns created")
 
     with col1:
-        st.title("Signals Analysis Assistant")
+        st.title("Signals Intelligence Dashboard")
 
     with col2:
         def logout_callback(details: dict):
-            report_manager.reset_the_reports(50)
+            report_manager.reset_the_reports(140) # Reset to full list
             st.session_state.chat_history.clear()
 
-        debug_log("Rendering logout button")
         authenticator.logout("Logout", callback=logout_callback)
             
     col1, col2 = st.columns([0.7, 0.3], border=True)
-    debug_log("Second columns created")
 
     if "page" not in st.session_state:
-        debug_log("Initializing page in session state")
         st.session_state["page"] = "report_selection"
     if "selected_report_data" not in st.session_state:
-        debug_log("Initializing selected_report_data in session state")
         st.session_state["selected_report_data"] = None
 
-    debug_log("Defining calculate_dashboard_stats")
-    def calculate_dashboard_stats(all_reports: list[SignalsReport]):
+    def calculate_dashboard_stats(all_reports: list[Assessment]):
         """Calculates dashboard statistics from a list of reports."""
         total_reports = len(all_reports)
-        total_signals_transactions = 0
-        total_transactions = 0
-
+        type_counts = {}
         for report in all_reports:
-            total_signals_transactions += len(report.transactions)
-            total_transactions += report.total_number_of_transactions
-
-        if total_transactions > 0:
-            signals_percentage = (total_signals_transactions / total_transactions) * 100
-        else:
-            signals_percentage = 0
-
+            type_counts[report.type] = type_counts.get(report.type, 0) + 1
         return {
             "total_reports": total_reports,
-            "signals_percentage": signals_percentage,
-            "total_signals_transactions": total_signals_transactions,
-            "total_transactions": total_transactions,
+            "type_counts": type_counts
         }
 
-    debug_log("Defining display_dashboard")
     def display_dashboard(stats):
-        col1, col2, col3, col4 = st.columns(4)
+        col1, col2 = st.columns([1, 3])
 
         with col1:
-            st.metric("Total Reports", stats["total_reports"])
+            st.metric("Total Assessments", stats["total_reports"])
 
         with col2:
-            formatted_signals_percentage = f"{stats['signals_percentage']:.2f}%"
-            st.metric("24h Signals Percentage", formatted_signals_percentage)
-
-        with col3:
-            st.metric("24h Signals Transactions", stats["total_signals_transactions"])
-
-        with col4:
-            st.metric("24h Transactions", stats["total_transactions"])
+            # Display type counts as a horizontal bar chart using Plotly for better visuals
+            type_counts = stats["type_counts"]
+            if type_counts:
+                df = pd.DataFrame(list(type_counts.items()), columns=["Type", "Count"])
+                df = df.sort_values(by="Count", ascending=True)
+                fig = go.Figure(go.Bar(
+                    x=df["Count"],
+                    y=df["Type"],
+                    orientation='h'
+                ))
+                fig.update_layout(
+                    title="Assessments by Type",
+                    xaxis_title="Count",
+                    yaxis_title=None,
+                    height=300,
+                    margin=dict(l=0, r=0, t=30, b=0)
+                )
+                st.plotly_chart(fig, use_container_width=True)
             
-    debug_log("Defining report_selection_page")
     def report_selection_page():
-        debug_log("Entering report_selection_page")
         all_reports = report_manager.get_all_reports()
-        debug_log(f"Found {len(all_reports)} reports")
         if not all_reports:
-            st.write("No reports found.")
+            st.write("No assessments found.")
             return
 
         # Calculate and display dashboard stats
@@ -350,9 +321,8 @@ def display_app_content(authenticator):
         table = ReportTable(report_manager)
         table.render()
 
-    debug_log("Defining report_view_page")
     def report_view_page():
-        if st.button("Back to Reports"):
+        if st.button("Back to Assessments"):
             st.session_state["page"] = "report_selection"
             st.session_state["selected_report_data"] = None
             st.rerun()
@@ -362,10 +332,9 @@ def display_app_content(authenticator):
             report_markdown = report_generator.generate_report(selected_report_data)
             st.markdown(report_markdown, unsafe_allow_html=True)
         else:
-            st.write("Please select a report from the previous page.")
+            st.write("Please select an assessment from the previous page.")
 
     page_name = st.session_state["page"]
-    debug_log(f"Current page: {page_name}")
 
     with col1:
         col1_container = st.empty()
@@ -379,13 +348,3 @@ def display_app_content(authenticator):
     with col2:
         chatbox = Chatbox(llm, report_manager)
         chatbox.render(page_name, st.session_state["selected_report_data"])
-
-    async def test_ticker(col):
-        while page_name == "report_selection":
-            if len(report_manager.reports) >= 500:
-                return
-            report_manager.generate_new_report()
-            st.rerun()
-            await asyncio.sleep(60)
-
-    asyncio.run(test_ticker(col1))

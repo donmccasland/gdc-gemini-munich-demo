@@ -202,6 +202,27 @@ class ReportTable:
         self.table_height = TABLE_HEIGHT
         self.report_link_template = REPORT_LINK_TEMPLATE
         self.button_counter = 0
+        # Read sort state from query params
+        self.sort_column = st.query_params.get("sort_col", None)
+        self.sort_order = st.query_params.get("sort_order", "asc")
+
+    def sort_data(self, data, column):
+        reverse = self.sort_order == "desc"
+        
+        # Helper to safely get attribute for sorting, handling None/missing
+        def get_sort_key(item):
+            val = getattr(item, column, "")
+            # If it's one of the summary fields, fall back to the main field if summary is empty
+            if column == "source_summary":
+                 val = item.source_summary or item.source
+            elif column == "target_summary":
+                 val = item.target_summary or item.target
+            elif column == "timing_summary":
+                 val = item.timing_summary or item.timing
+            return val or "" # Ensure we return a string for comparison if still None
+
+        data.sort(key=get_sort_key, reverse=reverse)
+        return data
     
     def render(self):
         all_reports = self.report_manager.get_all_reports()
@@ -209,26 +230,51 @@ class ReportTable:
             st.write("No assessments found.")
             return
 
+        # Apply sorting if a column is selected
+        if self.sort_column:
+             # We need a copy to not mutate the original list in report_manager permanently for this session view
+             all_reports = all_reports.copy()
+             self.sort_data(all_reports, self.sort_column)
+
         with st.container(height=self.table_height):
             # Adjusted column weights for new fields
-            cols = st.columns([1.2, 2.5, 2, 2, 2, 0.8, 0.8])
-            headers = ["ID", "Type", "Source", "Target", "Timing", "Format", "Open"]
+            cols = st.columns([1.2, 2.5, 2, 2, 2, 0.8])
+            headers = ["ID", "Type", "Source", "Target", "Timing", "Format"]
+            # Mapping headers to actual attribute names for sorting
+            header_map = {
+                "ID": "assessment_id",
+                "Type": "type",
+                "Source": "source_summary",
+                "Target": "target_summary",
+                "Timing": "timing_summary",
+                "Format": "original_format"
+            }
+
             for i, header in enumerate(headers):
-                cols[i].markdown(f"<span style='color: #87CEEB; font-weight: bold; font-size: 18px;'>{header}</span>", unsafe_allow_html=True)
+                col_name = header_map[header]
+                next_order = "asc"
+                if self.sort_column == col_name and self.sort_order == "asc":
+                    next_order = "desc"
+                
+                # Build link for sorting
+                link = f"?sort_col={col_name}&sort_order={next_order}"
+                
+                # Add an arrow indicator if currently sorted
+                display_header = header
+                if self.sort_column == col_name:
+                    display_header += " ↑" if self.sort_order == "asc" else " ↓"
+                
+                cols[i].markdown(f"<a href='{link}' target='_self' style='color: #87CEEB; font-weight: bold; font-size: 18px; text-decoration: none;'>{display_header}</a>", unsafe_allow_html=True)
 
             for report in all_reports:
-                cols = st.columns([1.2, 2.5, 2, 2, 2, 0.8, 0.8])
-                cols[0].write(report.assessment_id)
+                cols = st.columns([1.2, 2.5, 2, 2, 2, 0.8])
+                # Make ID a clickable link that reloads with query param
+                cols[0].markdown(f'<a href="?report_id={report.assessment_id}" target="_self">{report.assessment_id}</a>', unsafe_allow_html=True)
                 cols[1].write(report.type)
                 cols[2].write(report.source_summary or report.source)
                 cols[3].write(report.target_summary or report.target)
                 cols[4].write(report.timing_summary or report.timing)
                 cols[5].write(report.original_format)
-                self.button_counter += 1
-                if cols[6].button("Open", key=f"view_{report.assessment_id}_{self.button_counter}"):
-                    st.session_state["selected_report_data"] = report
-                    st.session_state["page"] = "report_view"
-                    st.rerun()
                 
 
 def display_app_content(authenticator):
@@ -283,11 +329,15 @@ def display_app_content(authenticator):
     def calculate_dashboard_stats(all_reports: list[Assessment]):
         """Calculates dashboard statistics from a list of reports."""
         total_reports = len(all_reports)
+        high_risk_count = 0
         type_counts = {}
         for report in all_reports:
             type_counts[report.type] = type_counts.get(report.type, 0) + 1
+            if report.severity and report.severity.lower() == "high":
+                high_risk_count += 1
         return {
             "total_reports": total_reports,
+            "high_risk_count": high_risk_count,
             "type_counts": type_counts
         }
 
@@ -296,6 +346,7 @@ def display_app_content(authenticator):
 
         with col1:
             st.metric("Total Assessments", stats["total_reports"])
+            st.metric("High Risk Assessments", stats["high_risk_count"])
 
         with col2:
             # Display type counts as a horizontal bar chart using Plotly for better visuals
@@ -339,12 +390,32 @@ def display_app_content(authenticator):
         if st.button("Back to Assessments"):
             st.session_state["page"] = "report_selection"
             st.session_state["selected_report_data"] = None
+            # Clear report_id from query params to allow navigation back
+            st.query_params.clear()
             st.rerun()
 
         if st.session_state["selected_report_data"] is not None:
             selected_report_data = st.session_state["selected_report_data"]
             report_markdown = report_generator.generate_report(selected_report_data)
             st.markdown(report_markdown, unsafe_allow_html=True)
+
+            # Display media if available
+            if selected_report_data.filename:
+                file_path = os.path.join("generated-assessments", selected_report_data.filename)
+                if os.path.exists(file_path):
+                    ext = selected_report_data.original_format.lower()
+                    if ext in ['png', 'jpg', 'jpeg', 'gif']:
+                        st.image(file_path, caption=f"Original Media: {selected_report_data.filename}")
+                    elif ext == 'pdf':
+                        # For PDF, we can use an embed tag to display it
+                        import base64
+                        with open(file_path, "rb") as f:
+                            base64_pdf = base64.b64encode(f.read()).decode('utf-8')
+                        pdf_display = f'<embed src="data:application/pdf;base64,{base64_pdf}" width="100%" height="800px" type="application/pdf">'
+                        st.markdown(pdf_display, unsafe_allow_html=True)
+                    elif ext == 'mp4':
+                        st.video(file_path)
+                    # Add more media types here if needed (e.g., mp3 for audio)
         else:
             st.write("Please select an assessment from the previous page.")
 

@@ -48,8 +48,11 @@ def process_file(filename):
 
     base_name = "_".join(filename.split('_')[:-1])
     assessment_type = TYPE_MAPPING.get(base_name, "Unknown Type")
-    if assessment_type == "Unknown Type" and "Gemini_Generated_Image" in filename:
-         assessment_type = "Visual Threat Evidence"
+    if assessment_type == "Unknown Type":
+        if "Gemini_Generated_Image" in filename:
+             assessment_type = "Visual Threat Evidence"
+        elif filename.endswith('.mp4'):
+             assessment_type = "Video Threat Evidence"
 
     file_format = filename.split('.')[-1]
 
@@ -59,13 +62,14 @@ def process_file(filename):
     - Target of the attack (full detail)
     - Attack method (full detail)
     - Attack timing (full detail)
+    - Severity of the threat (High, Medium, Low, or Unknown)
     - A short summary of the source (max 5 words)
     - A short summary of the target (max 5 words)
     - A short summary of the attack method (max 5 words)
     - A short summary of the attack timing (max 5 words)
     - A short summary of the entire assessment (max 2 sentences)
 
-    Return the result as a JSON object with keys: 'source', 'target', 'method', 'timing', 'source_summary', 'target_summary', 'method_summary', 'timing_summary', 'summary'.
+    Return the result as a JSON object with keys: 'source', 'target', 'method', 'timing', 'severity', 'source_summary', 'target_summary', 'method_summary', 'timing_summary', 'summary'.
     If a field cannot be found, use "Unknown".
     """
 
@@ -121,7 +125,9 @@ def process_file(filename):
             target_summary=get_str(extracted_data, 'target_summary'),
             method_summary=get_str(extracted_data, 'method_summary'),
             timing_summary=get_str(extracted_data, 'timing_summary'),
+            severity=get_str(extracted_data, 'severity'),
             original_format=file_format,
+            filename=filename,
             raw_content=raw_content
         )
         return assessment

@@ -214,15 +214,15 @@ class ReportTable:
             cols = st.columns([1.2, 2.5, 2, 2, 2, 0.8, 0.8])
             headers = ["ID", "Type", "Source", "Target", "Timing", "Format", "Open"]
             for i, header in enumerate(headers):
-                cols[i].write(f"**{header}**")
+                cols[i].markdown(f"<span style='color: #87CEEB; font-weight: bold; font-size: 18px;'>{header}</span>", unsafe_allow_html=True)
 
             for report in all_reports:
                 cols = st.columns([1.2, 2.5, 2, 2, 2, 0.8, 0.8])
                 cols[0].write(report.assessment_id)
                 cols[1].write(report.type)
-                cols[2].write(report.source)
-                cols[3].write(report.target)
-                cols[4].write(report.timing)
+                cols[2].write(report.source_summary or report.source)
+                cols[3].write(report.target_summary or report.target)
+                cols[4].write(report.timing_summary or report.timing)
                 cols[5].write(report.original_format)
                 self.button_counter += 1
                 if cols[6].button("Open", key=f"view_{report.assessment_id}_{self.button_counter}"):
@@ -265,6 +265,20 @@ def display_app_content(authenticator):
         st.session_state["page"] = "report_selection"
     if "selected_report_data" not in st.session_state:
         st.session_state["selected_report_data"] = None
+
+    # Check for report_id in query params
+    query_params = st.query_params
+    if "report_id" in query_params:
+        report_id = query_params["report_id"]
+        report = report_manager.get_report_by_id(report_id)
+        if report:
+            st.session_state["selected_report_data"] = report
+            st.session_state["page"] = "report_view"
+            # Clear the query param so it doesn't persist on reload/navigation if desired, 
+            # or keep it. Clearing it is often cleaner.
+            # st.query_params.clear() 
+        else:
+            st.error(f"Report with ID {report_id} not found.")
 
     def calculate_dashboard_stats(all_reports: list[Assessment]):
         """Calculates dashboard statistics from a list of reports."""

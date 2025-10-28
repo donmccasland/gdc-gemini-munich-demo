@@ -37,6 +37,12 @@ class ReportManager:
     def get_report_ids(self) -> set[str]:
         return {report.assessment_id for report in self.reports}
 
+    def get_report_by_id(self, report_id: str) -> Assessment | None:
+        for report in self.reports:
+            if report.assessment_id == report_id:
+                return report
+        return None
+
     def reset_the_reports(self, reports_number: int = 50) -> None:
         self.reports = self._load_initial_reports()
         if len(self.reports) > reports_number:

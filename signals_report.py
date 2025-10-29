@@ -27,6 +27,8 @@ class Assessment(BaseModel):
     filename: Optional[str] = Field(default=None, description="Original filename of the assessment.")
     raw_content: str = Field(..., description="Full raw content of the assessment.")
     created_at: dt = Field(default_factory=dt.now, description="Date and time when this assessment object was created.")
+    lat: Optional[float] = Field(default=None, description="Latitude of the target location.")
+    lon: Optional[float] = Field(default=None, description="Longitude of the target location.")
     additional_data: Optional[Dict[str, Any]] = Field(default=None, description="Any other relevant data extracted.")
 
 

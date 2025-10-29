@@ -20,6 +20,7 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 
 import pandas as pd
 import plotly.graph_objects as go
+import plotly.express as px
 
 from signals_report import Assessment, AssessmentGenerator
 from report_manager import ReportManager
@@ -297,6 +298,15 @@ def display_app_content(authenticator):
 
     with col1:
         st.title("Signals Intelligence Dashboard")
+        nav1, nav2, nav3 = st.columns([0.1, 0.1, 0.8])
+        with nav1:
+            if st.button("Home", use_container_width=True):
+                st.session_state["page"] = "report_selection"
+                st.rerun()
+        with nav2:
+            if st.button("Map", use_container_width=True):
+                st.session_state["page"] = "map_view"
+                st.rerun()
 
     with col2:
         def logout_callback(details: dict):
@@ -419,6 +429,70 @@ def display_app_content(authenticator):
         else:
             st.write("Please select an assessment from the previous page.")
 
+    def map_view_page():
+        st.header("Operational Threat Map")
+        
+        # Get all reports and filter for those with geolocation data
+        all_reports = report_manager.get_all_reports()
+        map_data = []
+        for report in all_reports:
+            if report.lat is not None and report.lon is not None:
+                map_data.append({
+                    'lat': report.lat,
+                    'lon': report.lon,
+                    'type': report.type,
+                    'assessment_id': report.assessment_id,
+                    'summary': report.summary or report.type
+                })
+        
+        if map_data:
+            df = pd.DataFrame(map_data)
+            
+            fig = px.scatter_mapbox(
+                df, 
+                lat='lat', 
+                lon='lon', 
+                hover_name='assessment_id',
+                hover_data={
+                    'lat': False, 
+                    'lon': False, 
+                    'assessment_id': False, # Already in hover_name
+                    'type': True, 
+                    'summary': False
+                },
+                custom_data=['assessment_id'],
+                labels={'type': 'Threat Type', 'assessment_id': 'Report ID'},
+                zoom=3,
+                center={"lat": 51.0, "lon": 10.0} # Approximate center of Europe
+            )
+            
+            fig.update_traces(marker=dict(size=15, color='rgb(217, 83, 79)')) # #d9534f
+            fig.update_layout(
+                mapbox_style="open-street-map",
+                margin={"r":0,"t":0,"l":0,"b":0},
+                height=600
+            )
+
+            # Display the map and capture selection events
+            event = st.plotly_chart(fig, on_select="rerun", selection_mode="points", use_container_width=True)
+
+            if event and event.get("selection") and event["selection"]["points"]:
+                # Get the selected point index
+                point_index = event["selection"]["points"][0]["point_index"]
+                # Retrieve the assessment_id from the DataFrame using the index
+                selected_report_id = df.iloc[point_index]["assessment_id"]
+                
+                # Navigate to the report view
+                report = report_manager.get_report_by_id(selected_report_id)
+                if report:
+                    st.session_state["selected_report_data"] = report
+                    st.session_state["page"] = "report_view"
+                    st.rerun()
+
+            st.caption(f"Showing {len(map_data)} assessments with confirmed geolocation. Click a point to view details.")
+        else:
+            st.info("No assessments with specific geolocation data found.")
+
     page_name = st.session_state["page"]
 
     with col1:
@@ -428,6 +502,8 @@ def display_app_content(authenticator):
                 report_selection_page()
             elif page_name == "report_view":
                 report_view_page()
+            elif page_name == "map_view":
+                map_view_page()
 
     # Sidebar Chat
     with col2:
